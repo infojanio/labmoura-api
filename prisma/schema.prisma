@@ -47,6 +47,7 @@ model Product {
   price              Decimal
   quantity           Decimal
   image              String?
+  //status             Boolean     @default(false)
   cashbackPercentage Float       @map("chashback_percentage")
   store_id           String      @map("store_id")
   store              Store       @relation(fields: [store_id], references: [id])
@@ -114,10 +115,9 @@ model Address {
 }
 
 model Category {
-  id    String  @id @default(uuid())
-  name  String
-  image String?
-
+  id          String        @id @default(uuid())
+  name        String
+  image       String?
   created_at  DateTime      @default(now()) @map("created_at")
   SubCategory SubCategory[]
 
