@@ -15,10 +15,17 @@ export class InMemoryProductsRepository implements ProductsRepository {
     })
   }
 
-  async delete(data: Prisma.ProductWhereUniqueInput): Promise<Product> {
-    return prisma.product.delete({
-      where: data, // Ex: { id: "product_id" }
-    })
+  async delete(where: { id: string }): Promise<Product> {
+    const productIndex = this.items.findIndex(
+      (product) => product.id === where.id,
+    )
+
+    if (productIndex === -1) {
+      throw new Error('Product not found')
+    }
+
+    this.items[productIndex].status = true
+    return this.items[productIndex]
   }
 
   public items: Product[] = []
@@ -42,7 +49,8 @@ export class InMemoryProductsRepository implements ProductsRepository {
       name: data.name,
       description: data.description || null,
       price: new Prisma.Decimal(data.price), // Converte o preço para Decimal.,
-      quantity: new Prisma.Decimal(data.quantity), // Converte o preço para Decimal.,
+      quantity: new Prisma.Decimal(data.quantity), // Converte o preço para Decimal.
+      status: data.status,
       image: data.image || null,
       cashbackPercentage: data.cashbackPercentage || 0, // Define um valor padrão caso não seja informado.
       store_id: data.store_id,

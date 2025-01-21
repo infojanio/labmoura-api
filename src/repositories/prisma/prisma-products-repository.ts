@@ -39,25 +39,29 @@ export class PrismaProductsRepository implements ProductsRepository {
    * @returns O produto atualizado.
    */
 
-  async update(data: {
-    where: Prisma.ProductWhereUniqueInput
-    data: Prisma.ProductUpdateInput
-  }): Promise<Product> {
+  async update(
+    productId: string,
+    data: {
+      where: Prisma.ProductWhereUniqueInput
+      data: Prisma.ProductUpdateInput
+    },
+  ): Promise<Product> {
     return prisma.product.update({
       where: data.where, // Exemplo: { id: 'product_id' }
       data: data.data, // Exemplo: { name: 'Novo Nome', price: 99.99 }
     })
   }
 
-  /**
-   * Remove um produto do banco de dados.
-   *
-   * @param where - Filtro único para localizar o produto (ex.: `id`).
-   * @returns O produto excluído.
-   */
   async delete(where: Prisma.ProductWhereUniqueInput): Promise<Product> {
-    return prisma.product.delete({
-      where, // Exemplo: { id: 'product_id' }
+    const product = await prisma.product.findUnique({ where })
+
+    if (!product) {
+      throw new Error('Product not found')
+    }
+
+    return prisma.product.update({
+      where,
+      data: { status: true }, // Marca como "deletado"
     })
   }
 }

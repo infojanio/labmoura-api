@@ -8,5 +8,5 @@ export interface ProductsRepository {
     where: Prisma.ProductWhereUniqueInput
     data: Prisma.ProductUpdateInput
   }): Promise<Product>
-  delete(id: Prisma.ProductWhereUniqueInput): Promise<Product>
+  delete(where: Prisma.ProductWhereUniqueInput): Promise<Product>
 }

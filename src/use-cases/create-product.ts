@@ -7,6 +7,7 @@ interface CreateProductUseCaseRequest {
   price: number
   quantity: number
   image: string
+  status: boolean
   cashbackPercentage: number // Define um valor padrão caso não seja informado.
   store_id: string
   subcategory_id: string
@@ -24,6 +25,7 @@ export class CreateProductUseCase {
     price,
     quantity,
     image,
+    status,
     cashbackPercentage,
     store_id,
     subcategory_id,
@@ -36,6 +38,7 @@ export class CreateProductUseCase {
       price,
       quantity,
       image,
+      status,
       cashbackPercentage,
       store_id,
       subcategory_id,
