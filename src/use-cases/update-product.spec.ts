@@ -1,6 +1,7 @@
 import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'
 import { UpdateProductUseCase } from './update-product'
 import { expect, describe, it, beforeEach } from 'vitest'
+import { Prisma } from '@prisma/client'
 
 let productsRepository: InMemoryProductsRepository
 let updateProductUseCase: UpdateProductUseCase
@@ -17,7 +18,7 @@ describe('Update Product Use Case', () => {
       id: 'product-id-1',
       name: 'Tênis',
       description: 'Nike, n.40',
-      price: 220,
+      price: 210,
       quantity: 10,
       image: 'nike.png',
       status: false,
@@ -31,13 +32,24 @@ describe('Update Product Use Case', () => {
     const { updatedProduct } = await updateProductUseCase.execute({
       productId: product.id,
       name: 'Tênis Atualizado',
-      price: 250,
+      description: 'Nike, n.40',
+      price: 220,
+      quantity: 100,
+      image: 'nike.png',
+      status: true,
+      cashbackPercentage: 32,
+      store_id: '1453sdf1555',
+      subcategory_id: '122355113fd',
     })
-
+    console.log('display:', updatedProduct)
     // Assert: Verifica que os dados foram atualizados
-    expect(updatedProduct.name).toBe('Tênis Atualizado')
-    expect(updatedProduct.price).toBe(250)
     expect(updatedProduct.id).toBe(product.id)
+    expect(updatedProduct.name).toBe('Tênis Atualizado')
+    expect(updatedProduct.description).toBe('Nike, n.40')
+    expect(updatedProduct.store_id).toBe('1453sdf1555')
+    expect(updatedProduct.cashbackPercentage).toBe(32)
+    expect(updatedProduct.price).toBe(220)
+    expect(updatedProduct.quantity).toBe(100)
   })
 
   it('Deve lançar um erro ao tentar atualizar um produto inexistente.', async () => {

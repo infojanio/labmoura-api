@@ -19,7 +19,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     })
 
     const balance = userCashbacks.reduce(
-      (acc, cashback) => acc + cashback.amount,
+      (acc, cashback) => acc + cashback.amount.toNumber(),
       0,
     )
 
@@ -57,7 +57,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
       id: randomUUID(),
       user_id: data.user_id,
       store_id: data.store_id,
-      totalAmount: data.totalAmount || new Decimal(200),
+      totalAmount: new Decimal(200), //data.totalAmount || new Decimal(200),
       status: data.status || 'PENDING', // Valor padrão
       validated_at: data.validated_at ? new Date(data.validated_at) : null,
       created_at: data.created_at || new Date(),

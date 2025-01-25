@@ -138,7 +138,6 @@ describe('Order Use Case', () => {
     const fixedTime2 = new Date(2022, 0, 21, 9, 0, 0)
 
     vi.setSystemTime(fixedTime)
-    console.log(fixedTime)
     //1. pedido
     await sut.execute({
       storeId: 'loja-01',
@@ -151,6 +150,7 @@ describe('Order Use Case', () => {
       created_at: fixedTime,
     })
 
+    console.log(fixedTime)
     //2. pedido
     await expect(() =>
       sut.execute({
@@ -170,7 +170,7 @@ describe('Order Use Case', () => {
 
   it('Deve ser possível fazer 2 pedidos, mas em horas diferentes.', async () => {
     const fixedTime = new Date(2022, 0, 20, 10, 20, 15)
-    const fixedTime2 = new Date(2022, 0, 20, 12, 20, 15)
+    const fixedTime2 = new Date(2022, 0, 20, 10, 20, 15)
     console.log('1. pedido: hs:', fixedTime)
     console.log('2. pedido: hs:', fixedTime2)
 

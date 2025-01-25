@@ -1,5 +1,5 @@
 import { ProductsRepository } from '@/repositories/products-repository'
-import { Product } from '@prisma/client'
+import { Prisma, Product } from '@prisma/client'
 
 interface UpdateProductUseCaseRequest {
   productId: string
@@ -26,13 +26,13 @@ export class UpdateProductUseCase {
     ...data
   }: UpdateProductUseCaseRequest): Promise<UpdateProductUseCaseResponse> {
     // Verifica se o produto existe
-    const product = await this.productsRepository.findById(productId)
+    const existingProduct = await this.productsRepository.findById(productId)
 
-    if (!product) {
+    if (!existingProduct) {
       throw new Error('Product not found')
     }
 
-    // Atualiza o produto com os novos dados
+    // Atualiza o produto
     const updatedProduct = await this.productsRepository.update(productId, data)
 
     return { updatedProduct }

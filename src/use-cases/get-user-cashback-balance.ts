@@ -1,5 +1,5 @@
-import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-orders-repository'
 import { OrdersRepository } from '@/repositories/orders-repository'
+import { CashbacksRepository } from '@/repositories/cashbacks-repository'
 
 interface GetUserCashbackBalanceUseCaseRequest {
   userId: string
@@ -10,14 +10,28 @@ interface GetUserCashbackBalanceUseCaseResponse {
 }
 
 export class GetUserCashbackBalanceUseCase {
-  constructor(private ordersRepository: OrdersRepository) {}
+  constructor(
+    //  private ordersRepository: OrdersRepository,
+    private cashbacksRepository: CashbacksRepository,
+  ) {}
 
   async execute(
     request: GetUserCashbackBalanceUseCaseRequest,
   ): Promise<GetUserCashbackBalanceUseCaseResponse> {
     const { userId } = request
 
-    const balance = await this.ordersRepository.balanceByUserId(userId)
+    // Soma dos cashbacks recebidos
+    const receivedCashback = await this.cashbacksRepository.totalCashbackByUserId(
+      userId,
+    )
+
+    // Soma dos cashbacks usados
+    const usedCashback = await this.cashbacksRepository.totalUsedCashbackByUserId(
+      userId,
+    )
+
+    // Calcula o saldo atual
+    const balance = receivedCashback - usedCashback
 
     return { balance }
   }

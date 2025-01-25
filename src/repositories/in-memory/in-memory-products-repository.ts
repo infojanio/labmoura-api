@@ -5,14 +5,46 @@ import { Prisma, Product } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 export class InMemoryProductsRepository implements ProductsRepository {
-  async update(data: {
-    where: Prisma.ProductWhereUniqueInput
-    data: Prisma.ProductUpdateInput
-  }): Promise<Product> {
-    return prisma.product.update({
-      where: data.where, // Ex: { id: "product_id" }
-      data: data.data, // Ex: { name: "New Product Name", price: 100 }
-    })
+  async update(
+    productId: string,
+    data: Prisma.ProductUncheckedUpdateInput,
+  ): Promise<Product> {
+    const productIndex = this.items.findIndex((item) => item.id === productId)
+    if (productIndex === -1) {
+      throw new Error('Product not found')
+    }
+    // Recupera o produto existente
+    const existingProduct = this.items[productIndex]
+    // Atualiza os campos fornecidos no data
+    const updatedProduct: Product = {
+      ...existingProduct,
+      name: data.name ? (data.name as string) : existingProduct.name,
+      description: data.description
+        ? (data.description as string)
+        : existingProduct.description,
+      price: data.quantity ? (data.price as number) : existingProduct.quantity,
+      quantity: data.quantity
+        ? (data.quantity as number)
+        : existingProduct.quantity,
+      image: data.image ? (data.image as string) : existingProduct.image,
+      status:
+        data.status !== undefined
+          ? (data.status as boolean)
+          : existingProduct.status,
+      cashbackPercentage: data.cashbackPercentage
+        ? (data.cashbackPercentage as number)
+        : existingProduct.cashbackPercentage,
+      store_id: data.store_id
+        ? (data.store_id as string)
+        : existingProduct.store_id,
+      subcategory_id: data.subcategory_id
+        ? (data.subcategory_id as string)
+        : existingProduct.subcategory_id,
+      created_at: existingProduct.created_at,
+    }
+    // Substitui o produto existente pelo atualizado
+    this.items[productIndex] = updatedProduct
+    return updatedProduct
   }
 
   async delete(where: { id: string }): Promise<Product> {
@@ -48,8 +80,8 @@ export class InMemoryProductsRepository implements ProductsRepository {
       id: data.id ?? randomUUID(),
       name: data.name,
       description: data.description || null,
-      price: new Prisma.Decimal(data.price), // Converte o preço para Decimal.,
-      quantity: new Prisma.Decimal(data.quantity), // Converte o preço para Decimal.
+      price: data.price || 0,
+      quantity: data.quantity || 0,
       status: data.status,
       image: data.image || null,
       cashbackPercentage: data.cashbackPercentage || 0, // Define um valor padrão caso não seja informado.

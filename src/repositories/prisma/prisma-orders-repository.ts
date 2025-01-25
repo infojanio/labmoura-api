@@ -96,7 +96,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
     })
 
     const balance = validatedCashbacks.reduce(
-      (acc, cashback) => acc + cashback.amount,
+      (acc, cashback) => acc + cashback.amount.toNumber(),
       0,
     )
 

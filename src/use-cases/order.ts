@@ -11,7 +11,7 @@ import { MaxNumberOfOrdersError } from './errors/max-number-of-orders-error'
 interface OrderUseCaseRequest {
   userId: string
   storeId: string
-  totalAmount: Decimal | number
+  totalAmount: number
   created_at: Date
   validated_at: Date
   status: OrderStatus

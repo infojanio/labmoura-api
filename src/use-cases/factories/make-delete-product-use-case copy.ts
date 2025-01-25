@@ -1,7 +1,7 @@
 import { PrismaProductsRepository } from '@/repositories/prisma/prisma-products-repository'
-import { CreateProductUseCase } from '../create-product'
-export function makeCreateProductUseCase() {
+import { DeleteProductUseCase } from '../delete-product'
+export function makeDeleteProductUseCase() {
   const productsRepository = new PrismaProductsRepository()
-  const useCase = new CreateProductUseCase(productsRepository)
+  const useCase = new DeleteProductUseCase(productsRepository)
   return useCase
 }

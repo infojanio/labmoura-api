@@ -1,26 +1,24 @@
 import { prisma } from '@/lib/prisma'
-
-import { Order, Prisma } from '@prisma/client'
-
 import { CashbacksRepository } from '../cashbacks-repository'
-import { Cashback } from '@prisma/client'
+
 export class PrismaCashbacksRepository implements CashbacksRepository {
-  prisma: any
-  async findByUserId(userId: string): Promise<Cashback[]> {
-    return this.prisma.cashback.findMany({
-      where: { user_id: userId },
-    })
-  }
-  async balanceByUserId(userId: string): Promise<number> {
-    const totalBalance = await this.prisma.cashback.aggregate({
-      _sum: {
-        amount: true,
-      },
-      where: {
-        user_id: userId,
-      },
+  //total recebido pelo cliente
+  async totalCashbackByUserId(userId: string): Promise<number> {
+    const result = await prisma.cashback.aggregate({
+      _sum: { amount: true },
+      where: { user_id: userId, amount: { gt: 0 } }, // Considera apenas valores positivos
     })
 
-    return totalBalance._sum.amount || 0 // Retorna 0 se não houver saldo
+    return result._sum.amount?.toNumber() || 0 // Retorna 0 se não houver resultado
+  }
+
+  //total utilizado pelo cliente
+  async totalUsedCashbackByUserId(userId: string): Promise<number> {
+    const result = await prisma.cashback.aggregate({
+      _sum: { amount: true },
+      where: { user_id: userId, amount: { lt: 0 } }, // Considera apenas valores negativos
+    })
+
+    return Math.abs(result._sum.amount?.toNumber() || 0) // Usa Math.abs para converter o total negativo em positivo
   }
 }
