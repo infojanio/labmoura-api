@@ -15,7 +15,7 @@
 - [x] Deve ser possível buscar um produto cadastrado.
 - [x] Deve ser possível atualizar um produto cadastrado.
 - [x] Deve ser possível deletar um produto cadastrado.
-- [] Deve ser possível cadastrar a categoria do produto.
+- [x] Deve ser possível cadastrar a categoria do produto.
 - [] Deve ser possível cadastrar a subcategoria do produto.
 - [x] Deve ser possível o usuário consultar o histórico de pedidos.
 - [x] Deve ser possível o usuário realizar pedidos em uma loja.

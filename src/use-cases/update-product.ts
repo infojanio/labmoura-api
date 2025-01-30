@@ -1,5 +1,5 @@
 import { ProductsRepository } from '@/repositories/products-repository'
-import { Prisma, Product } from '@prisma/client'
+import { Product } from '@prisma/client'
 
 interface UpdateProductUseCaseRequest {
   productId: string
