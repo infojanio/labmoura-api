@@ -91,28 +91,38 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     return orderOnSameDate
   }
 
+  async findByUserIdLastHour(
+    userId: string,
+    date: Date,
+  ): Promise<Order | null> {
+    const oneHourAgo = dayjs(date).subtract(1, 'hour')
+
+    return (
+      this.items.find((order) => {
+        const orderCreatedAt = dayjs(order.created_at)
+
+        return order.user_id === userId && orderCreatedAt.isAfter(oneHourAgo)
+      }) || null
+    )
+  }
+
   //encontra pedido feito no início da hora e no fim daquela hora
   async findByUserIdOnHour(userId: string, date: Date) {
     // Define o intervalo de uma hora
     const startOfTheHour = dayjs(date).startOf('hour')
     const endOfTheHour = dayjs(date).endOf('hour')
 
-    // Verifica se existe algum pedido dentro do intervalo de uma hora
+    // Verifica se existe um pedido do usuário dentro do intervalo de uma hora
     const orderOnSameHour = this.items.find((order) => {
-      const orderHour = dayjs(order.created_at) // Data da criação do pedido
+      const orderCreatedAt = dayjs(order.created_at)
 
-      // Valida se a data está no intervalo de uma hora
-      const isOnSameHour =
-        orderHour.isAfter(startOfTheHour) && orderHour.isBefore(endOfTheHour)
-
-      return order.user_id === userId && isOnSameHour
+      return (
+        order.user_id === userId &&
+        orderCreatedAt.isAfter(startOfTheHour) &&
+        orderCreatedAt.isBefore(endOfTheHour)
+      )
     })
 
-    // Retorna o pedido encontrado ou null
-    if (!orderOnSameHour) {
-      return null
-    }
-
-    return orderOnSameHour
+    return orderOnSameHour || null
   }
 }

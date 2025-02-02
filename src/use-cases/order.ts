@@ -1,9 +1,7 @@
 import { OrdersRepository } from '@/repositories/orders-repository'
 import { StoresRepository } from '@/repositories/stores-repository'
 
-import { Cashback, Order, OrderStatus, User } from '@prisma/client'
-import { ResourceNotFoundError } from './errors/resource-not-found-error'
-import { Decimal } from '@prisma/client/runtime/library'
+import { Order, OrderStatus, User } from '@prisma/client'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 import { MaxDistanceError } from './errors/max-distance-error'
 import { MaxNumberOfOrdersError } from './errors/max-number-of-orders-error'
@@ -37,13 +35,29 @@ export class OrderUseCase {
     userLongitude,
     totalAmount,
     validated_at,
+    created_at,
     status,
   }: OrderUseCaseRequest): Promise<OrderUseCaseResponse> {
     const store = await this.storesRepository.findById(storeId)
 
+    /*
+    const hasRecentOrder = await this.ordersRepository.findByUserIdOnHour(
+      userId,
+      new Date(),
+    )
+      */
+
     if (!store) {
-      throw new ResourceNotFoundError()
+      throw new Error('Não encontrou loja vinculada.')
     }
+
+    /*
+    if (hasRecentOrder) {
+      throw new Error(
+        'Usuário já fez um pedido na última hora. Aguarde antes de criar outro.',
+      )
+    }
+      */
 
     //se existir a loja, CALCULAR A DISTÂNCIA DO USER AND STORE
     const distance = getDistanceBetweenCoordinates(
@@ -62,12 +76,32 @@ export class OrderUseCase {
       throw new MaxDistanceError()
     }
 
-    //verifica se o usuário fez 2 pedidos na mesma hora
+    //verifica se o usuário fez 2 pedidos no mesmo dia
+    /*
     const orderOnSameDay = await this.ordersRepository.findByUserIdOnDate(
       userId,
-      validated_at || new Date(),
+      created_at || new Date(),
     )
     if (orderOnSameDay) {
+      throw new MaxNumberOfOrdersError()
+    }
+
+    //verifica se o usuário fez 2 pedidos na mesma hora
+    const orderOnSameHour = await this.ordersRepository.findByUserIdOnHour(
+      userId,
+      created_at || new Date(),
+    )
+
+    if (orderOnSameHour) {
+      throw new MaxNumberOfOrdersError()
+    }
+*/
+    const hasRecentOrder = await this.ordersRepository.findByUserIdLastHour(
+      userId,
+      created_at || new Date(),
+    )
+
+    if (hasRecentOrder) {
       throw new MaxNumberOfOrdersError()
     }
 
@@ -77,7 +111,7 @@ export class OrderUseCase {
       totalAmount,
       validated_at,
       status,
-      created_at: new Date(),
+      created_at,
     })
     return {
       order: newOrder,

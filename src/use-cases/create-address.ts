@@ -5,8 +5,8 @@ interface CreateAddressUseCaseRequest {
   city: string
   state: string
   postalCode: string
-  user_id?: string | null
   store_id?: string | null
+  user_id?: string | null
   //created_at: Date
 }
 interface CreateAddressUseCaseResponse {
@@ -19,8 +19,8 @@ export class CreateAddressUseCase {
     city,
     state,
     postalCode,
-    user_id,
     store_id,
+    user_id,
   }: // created_at,
   CreateAddressUseCaseRequest): Promise<CreateAddressUseCaseResponse> {
     const address = await this.addressesRepository.create({
@@ -28,8 +28,8 @@ export class CreateAddressUseCase {
       city,
       state,
       postalCode,
-      user_id,
       store_id,
+      user_id,
       //  created_at,
     })
     return { address }

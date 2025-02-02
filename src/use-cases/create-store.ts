@@ -5,7 +5,8 @@ interface CreateStoreUseCaseRequest {
   slug: string | null
   latitude: number
   longitude: number
-  created_at: Date
+
+  //created_at: Date
 }
 interface CreateStoreUseCaseResponse {
   store: Store

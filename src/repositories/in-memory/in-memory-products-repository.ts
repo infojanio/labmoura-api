@@ -26,11 +26,11 @@ export class InMemoryProductsRepository implements ProductsRepository {
       quantity: data.quantity
         ? (data.quantity as number)
         : existingProduct.quantity,
+
       image: data.image ? (data.image as string) : existingProduct.image,
-      status:
-        data.status !== undefined
-          ? (data.status as boolean)
-          : existingProduct.status,
+
+      status: data.status ? (data.status as boolean) : existingProduct.status,
+
       cashbackPercentage: data.cashbackPercentage
         ? (data.cashbackPercentage as number)
         : existingProduct.cashbackPercentage,

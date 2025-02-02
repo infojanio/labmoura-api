@@ -4,17 +4,19 @@ import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-e
 import { makeAddressUseCase } from '@/use-cases/factories/make-address-use-case'
 
 export async function address(request: FastifyRequest, reply: FastifyReply) {
-  const registerAddressBodySchema = z.object({
-    // id: z.string(),
-    street: z.string(),
-    city: z.string(),
-    state: z.string(),
-    postalCode: z.string(),
-    store_id: z.string(),
-    user_id: z.string(),
-    //addressId: z.string(),
-    // created_at: z.date(),
-  })
+  const registerAddressBodySchema = z
+    .object({
+      // id: z.string(),
+      street: z.string(),
+      city: z.string(),
+      state: z.string(),
+      postalCode: z.string(),
+      store_id: z.string().optional().nullable(),
+      user_id: z.string().optional().nullable(),
+    })
+    .refine((data) => data.store_id || data.user_id, {
+      message: 'store_id ou user_id deve ser informado.',
+    })
 
   const {
     // id,

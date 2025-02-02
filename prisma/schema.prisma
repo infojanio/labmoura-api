@@ -108,9 +108,9 @@ model Address {
   state      String
   postalCode String   @map("postal_code")
   created_at DateTime @default(now()) @map("created_at")
-  user_id    String?  @unique
+  store_id   String?
+  user_id    String?
   user       User?    @relation(fields: [user_id], references: [id])
-  store_id   String?  @unique
   store      Store?   @relation(fields: [store_id], references: [id])
 
   @@map("addresses")

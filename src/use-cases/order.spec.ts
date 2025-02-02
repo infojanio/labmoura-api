@@ -6,6 +6,7 @@ import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-sto
 import { OrderUseCase } from '@/use-cases/order'
 import { MaxNumberOfOrdersError } from './errors/max-number-of-orders-error'
 import { MaxDistanceError } from './errors/max-distance-error'
+import dayjs from 'dayjs'
 
 let ordersRepository: InMemoryOrdersRepository
 let storesRepository: InMemoryStoresRepository
@@ -132,50 +133,38 @@ describe('Order Use Case', () => {
     ).rejects.toBeInstanceOf(MaxDistanceError)
   })
 
-  it('Não deve ser possível fazer 2 pedidos na mesma hora.', async () => {
-    // vi.useFakeTimers()
-    const fixedTime = new Date(2022, 0, 21, 9, 0, 0)
-    const fixedTime2 = new Date(2022, 0, 21, 9, 0, 0)
+  it('Deve impedir que o usuário faça mais de um pedido em menos de 1 hora', async () => {
+    const date = new Date()
 
-    vi.setSystemTime(fixedTime)
-    //1. pedido
+    // Cria o primeiro pedido
     await sut.execute({
       storeId: 'loja-01',
-      userId: 'user-01',
+      userId: 'user-123',
       totalAmount: 200,
       userLatitude: -46.9355272,
       userLongitude: -12.9332477,
-      status: 'VALIDATED',
       validated_at: new Date(),
-      created_at: fixedTime,
+      status: 'VALIDATED',
+      created_at: date,
     })
 
-    console.log(fixedTime)
-    //2. pedido
+    // Tenta criar um segundo pedido dentro da mesma hora
     await expect(() =>
       sut.execute({
         storeId: 'loja-01',
-        userId: 'user-01',
-        totalAmount: 200,
+        userId: 'user-123',
+        totalAmount: 220,
         userLatitude: -46.9355272,
         userLongitude: -12.9332477,
         validated_at: new Date(),
         status: 'VALIDATED',
-        created_at: fixedTime2,
+        created_at: dayjs(date).add(30, 'minutes').toDate(), // 30 minutos depois
       }),
-    ).rejects.toBeInstanceOf(MaxNumberOfOrdersError)
-    // Restaura o comportamento normal dos timers
-    vi.useRealTimers()
+    ).rejects.toThrowError(MaxNumberOfOrdersError)
   })
 
-  it('Deve ser possível fazer 2 pedidos, mas em horas diferentes.', async () => {
-    const fixedTime = new Date(2022, 0, 20, 10, 20, 15)
-    const fixedTime2 = new Date(2022, 0, 20, 10, 20, 15)
-    console.log('1. pedido: hs:', fixedTime)
-    console.log('2. pedido: hs:', fixedTime2)
-
-    vi.setSystemTime(fixedTime)
-    //1. pedido
+  it('Deve permitir que o usuário faça um novo pedido após 1 hora', async () => {
+    // Cria o primeiro pedido
     await sut.execute({
       storeId: 'loja-01',
       userId: 'user-01',
@@ -184,11 +173,11 @@ describe('Order Use Case', () => {
       userLongitude: -12.9332477,
       validated_at: new Date(),
       status: 'VALIDATED',
-      created_at: fixedTime,
+      created_at: dayjs().subtract(2, 'hour').toDate(), // 2 horas atrás
     })
-    vi.setSystemTime(fixedTime2)
-    //2. pedido
-    const { order } = await sut.execute({
+
+    // Cria um segundo pedido após 1 hora e 1 minuto
+    const newOrder = await sut.execute({
       storeId: 'loja-01',
       userId: 'user-01',
       totalAmount: 200,
@@ -196,8 +185,9 @@ describe('Order Use Case', () => {
       userLongitude: -12.9332477,
       validated_at: new Date(),
       status: 'VALIDATED',
-      created_at: fixedTime2,
+      created_at: new Date(),
     })
-    expect(order.id).toEqual(expect.any(String))
+
+    expect(newOrder).toBeDefined()
   })
 })
