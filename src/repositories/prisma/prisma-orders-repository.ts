@@ -15,6 +15,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
     return order
   }
 
+  /*
   //encontra pedido feito em 1 dia
   async findByUserIdOnDate(userId: string, date: Date) {
     const startOfTheDay = dayjs(date).startOf('date')
@@ -47,7 +48,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
 
     return order
   }
-
+*/
   //encontra pedido feito em 1 hora
   async findByUserIdLastHour(userId: string): Promise<Order | null> {
     if (!this.items || !Array.isArray(this.items)) {
