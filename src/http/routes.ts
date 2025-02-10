@@ -8,12 +8,12 @@ import { verify } from 'crypto'
 import { verifyJWT } from './middlewares/verify-jwt'
 
 export async function appRoutes(app: FastifyInstance) {
+  /* Rotas acessíveis para usuário autenticado */
   app.post('/users', register)
   app.post('/address', address)
   app.post('/store', store)
   app.post('/sessions', authenticate)
 
   /* Rotas acessíveis para usuário autenticado */
-
   app.get('/me', { onRequest: [verifyJWT] }, profile)
 }
