@@ -6,10 +6,10 @@ import { profile } from './profile'
 import { register } from './register'
 
 export async function usersRoutes(app: FastifyInstance) {
-  /* Rotas acessíveis para usuário autenticado */
+  /* Rotas acessíveis para usuário não autenticado */
   app.post('/users', register)
   app.post('/sessions', authenticate)
 
-  /* Rotas acessíveis para usuário autenticado */
+  /* Rotas exclusivas para usuário autenticado */
   app.get('/me', { onRequest: [verifyJWT] }, profile)
 }
