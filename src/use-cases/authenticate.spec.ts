@@ -22,7 +22,7 @@ describe('Authenticate Use Case', () => {
       passwordHash: await hash('123456', 6),
       phone: '6296695513',
       avatar: 'foto.jpg',
-      address_id: '15dd21155gfg',
+      //address_id: '15dd21155gfg',
       role: 'USER',
       created_at: new Date(),
     })
@@ -55,7 +55,7 @@ describe('Authenticate Use Case', () => {
       passwordHash: await hash('123456', 6),
       phone: '6296695513',
       avatar: 'foto.jpg',
-      address_id: '15dd21155gfg',
+      // address_id: '15dd21155gfg',
       role: 'USER',
       created_at: new Date(),
     })

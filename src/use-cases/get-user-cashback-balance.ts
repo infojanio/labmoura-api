@@ -1,4 +1,3 @@
-import { OrdersRepository } from '@/repositories/orders-repository'
 import { CashbacksRepository } from '@/repositories/cashbacks-repository'
 
 interface GetUserCashbackBalanceUseCaseRequest {

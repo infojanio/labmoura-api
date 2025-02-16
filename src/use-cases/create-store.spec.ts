@@ -14,7 +14,7 @@ describe('Create Store Use Case', () => {
       slug: null,
       latitude: -46.9355272,
       longitude: -12.9332477,
-      created_at: new Date(),
+      //created_at: new Date(),
     })
     expect(store.id).toEqual(expect.any(String))
   })

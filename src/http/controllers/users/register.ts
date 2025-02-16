@@ -8,7 +8,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     // id: z.string(),
     name: z.string(),
     email: z.string().email(),
-    password: z.string().min(6),
+    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
     phone: z.string(),
     role: z.any(),
     avatar: z.string(),

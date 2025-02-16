@@ -18,7 +18,7 @@ describe('Register (e2e)', () => {
       role: 'USER',
       avatar: 'perfil.png',
     })
-    console.log(response)
+
     expect(response.statusCode).toEqual(201)
   })
 })
