@@ -1,6 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { makeFetchNearbyStoresUseCase } from '@/use-cases/factories/make-fetch-nearby-stores-use-case'
+
 export async function nearby(request: FastifyRequest, reply: FastifyReply) {
   const nearbyStoresQuerySchema = z.object({
     latitude: z.coerce.number().refine((value) => {

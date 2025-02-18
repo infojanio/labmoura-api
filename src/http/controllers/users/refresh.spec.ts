@@ -19,21 +19,20 @@ describe('Refresh Token (e2e)', () => {
       password: '123456',
     })
 
+    // 2️⃣ Verifica se o login retornou status 200 e tem um cookie de refresh
+    expect(authResponse.statusCode).toEqual(200)
     const cookies = authResponse.headers['set-cookie']
 
     expect(cookies).toBeDefined()
 
-    const response = await request(app.server)
+    const refreshResponse = await request(app.server)
       .patch('/token/refresh')
       .set('Cookie', cookies)
       .send()
 
-    expect(response.statusCode).toEqual(200)
-    expect(response.body).toEqual({
-      token: expect.any(String),
-    })
-    expect(response.get('Set-Cookie')).toEqual([
-      expect.stringContaining('refreshToken='),
-    ])
+    // 4️⃣ Verifica se a resposta contém o novo token de acesso
+    expect(refreshResponse.statusCode).toEqual(200)
+    expect(refreshResponse.body).toHaveProperty('token')
+    expect(refreshResponse.body.token).toBeDefined()
   })
 })

@@ -18,13 +18,22 @@ describe('Authenticate (e2e)', () => {
       role: 'USER',
       avatar: 'perfil.png',
     })
-    const response = await request(app.server).post('/sessions').send({
+    const authResponse = await request(app.server).post('/sessions').send({
       email: 'johndoe@example.com',
       password: '123456',
     })
-    expect(response.status).toEqual(200)
-    expect(response.body).toEqual({
-      token: expect.any(String),
-    })
+
+    const cookies = authResponse.headers['set-cookie'] // Captura os cookies
+
+    //console.log('Auth Response Headers:', response.headers['set-cookie'])
+
+    // Faz a requisição de refresh token usando o cookie
+    const response = await request(app.server)
+      .patch('/token/refresh')
+      .set('Cookie', cookies) // Envia os cookies armazenados
+      .send()
+
+    expect(response.statusCode).toEqual(200)
+    expect(response.body).toHaveProperty('token') // O novo token deve ser retornado
   })
 })

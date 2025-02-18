@@ -32,7 +32,7 @@ describe('Search Stores (e2e)', () => {
     const response = await request(app.server)
       .get('/stores/search')
       .query({
-        q: 'JavaScript',
+        name: 'JavaScript',
       })
       .set('Authorization', `Bearer ${token}`)
       .send()

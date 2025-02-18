@@ -14,8 +14,8 @@ describe('Create Order (e2e)', () => {
     const { token } = await createAndAuthenticateUser(app)
     const store = await prisma.store.create({
       data: {
-        name: 'JavaScript Gym',
-        slug: 'slogan.jpg',
+        name: 'Loja Teste',
+        slug: 'loja-teste',
         latitude: -27.2092052,
         longitude: -49.6401091,
       },

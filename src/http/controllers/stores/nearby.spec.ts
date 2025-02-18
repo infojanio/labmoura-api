@@ -11,29 +11,35 @@ describe('Nearby Stores (e2e)', () => {
   })
   it('should be able list nearby stores', async () => {
     const { token } = await createAndAuthenticateUser(app)
+
+    // Criando lojas dentro do raio permitido (<= 40 km)
     await request(app.server)
       .post('/stores')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: 'JavaScript Gym',
+        name: 'Loja Arraias',
         slug: 'Some description.',
-        latitude: -27.2092052,
-        longitude: -49.6401091,
+        latitude: -12.9301785,
+        longitude: -46.9520646,
       })
+
+    // Criando uma loja FORA do raio permitido (> 40 km)
     await request(app.server)
       .post('/stores')
       .set('Authorization', `Bearer ${token}`)
       .send({
-        name: 'TypeScript Gym',
+        name: 'Loja Alto Paraíso',
         slug: 'Some description.',
-        latitude: -27.0610928,
-        longitude: -49.5229501,
+        latitude: -27.2092052, // Distância maior
+        longitude: -47.5271038, // Distância maior
       })
+
+    // Chamando a rota de busca de lojas próximas
     const response = await request(app.server)
       .get('/stores/nearby')
       .query({
-        latitude: -27.2092052,
-        longitude: -49.6401091,
+        latitude: -13.0382409, //localização do cliente
+        longitude: -46.7712408, //localização do cliente
       })
       .set('Authorization', `Bearer ${token}`)
       .send()
@@ -41,7 +47,7 @@ describe('Nearby Stores (e2e)', () => {
     expect(response.body.stores).toHaveLength(1)
     expect(response.body.stores).toEqual([
       expect.objectContaining({
-        name: 'JavaScript Gym',
+        name: 'Loja Arraias',
       }),
     ])
   })

@@ -15,7 +15,7 @@ export class PrismaStoresRepository implements StoresRepository {
     //$queryRaw -> aceita escrever sql no código
     const stores = await prisma.$queryRaw<Store[]>` 
       SELECT * from stores
-      WHERE ( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(${longitude}) ) + sin( radians(${latitude}) ) * sin( radians( latitude ) ) ) ) <= 15 
+      WHERE ( 6371 * acos( cos( radians(${latitude}) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(${longitude}) ) + sin( radians(${latitude}) ) * sin( radians( latitude ) ) ) ) <= 40 
     `
     return stores
   }
