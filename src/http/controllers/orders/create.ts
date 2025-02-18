@@ -1,36 +1,41 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { makeOrderUseCase } from '@/use-cases/factories/make-order-use-case'
-import { validate } from './validate'
+
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createOrderParamsSchema = z.object({
     storeId: z.string().uuid(),
-    userId: z.string().uuid(),
-    status: z.string(),
-    totalAmount: z.number(),
-    validate: z.date(),
-    created_at: z.date(),
   })
+
   const createOrderBodySchema = z.object({
-    latitude: z.number().refine((value) => {
-      return Math.abs(value) <= 90
+    latitude: z.number().refine((value) => Math.abs(value) <= 90, {
+      message: 'Latitude inválida',
     }),
-    longitude: z.number().refine((value) => {
-      return Math.abs(value) <= 180
+    longitude: z.number().refine((value) => Math.abs(value) <= 180, {
+      message: 'Longitude inválida',
     }),
+    totalAmount: z.number().positive(),
   })
+
+  // Pegando os dados corretos do request
   const { storeId } = createOrderParamsSchema.parse(request.params)
-  const { latitude, longitude } = createOrderBodySchema.parse(request.body)
+  const { latitude, longitude, totalAmount } = createOrderBodySchema.parse(
+    request.body,
+  )
+
+  // Criando o pedido
   const orderUseCase = makeOrderUseCase()
-  await orderUseCase.execute({
+
+  const newOrder = await orderUseCase.execute({
     storeId,
-    userId: request.user.sub,
+    userId: request.user.sub, // ID do usuário do JWT
     userLatitude: latitude,
     userLongitude: longitude,
-    status: 'VALIDATED',
-    totalAmount: 0,
-    validated_at: new Date(),
+    status: 'PENDING', // O status deve ser definido corretamente
+    totalAmount,
+    validated_at: new Date(), // Ainda não validado
     created_at: new Date(),
   })
-  return reply.status(201).send()
+
+  return reply.status(201).send({ order: newOrder })
 }

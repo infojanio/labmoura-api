@@ -93,13 +93,17 @@ export class PrismaOrdersRepository implements OrdersRepository {
     return order
   }
   async save(data: Order) {
-    const order = await prisma.order.update({
-      where: {
-        id: data.id,
-      },
-      data,
-    })
-    return order
+    try {
+      const order = await prisma.order.upsert({
+        where: { id: data.id },
+        update: data,
+        create: data, // Se o pedido não existir, ele será criado
+      })
+      return order
+    } catch (error) {
+      console.error('Erro ao salvar pedido:', error)
+      throw new Error('Erro ao salvar pedido.')
+    }
   }
 
   async balanceByUserId(userId: string): Promise<number> {

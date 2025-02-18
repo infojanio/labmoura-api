@@ -64,13 +64,10 @@ export class OrderUseCase {
       //coordenadas do usuário
       { latitude: userLatitude, longitude: userLongitude },
       //coordenadas da loja
-      {
-        latitude: store.latitude.toNumber(),
-        longitude: store.longitude.toNumber(),
-      },
+      { latitude: Number(store.latitude), longitude: Number(store.longitude) }, // Usa Number() para evitar problemas
     )
 
-    const MAX_DISTANCE_IN_KILOMETERS = 10.0 // // 10 km na escala
+    const MAX_DISTANCE_IN_KILOMETERS = 40.0 // // 40 km na escala
 
     if (distance > MAX_DISTANCE_IN_KILOMETERS) {
       throw new MaxDistanceError()
@@ -101,6 +98,7 @@ export class OrderUseCase {
       created_at || new Date(),
     )
 
+    console.log('Pedidos recentes encontrados:', hasRecentOrder)
     if (hasRecentOrder) {
       throw new MaxNumberOfOrdersError()
     }
@@ -109,10 +107,13 @@ export class OrderUseCase {
       user_id: userId,
       store_id: storeId,
       totalAmount,
-      validated_at,
+      validated_at: validated_at || null, // Definir null caso não seja passado
       status,
-      created_at,
+      created_at: created_at || new Date(), // Garante que created_at tenha um valor válido
     })
+    const savedOrder = await this.ordersRepository.findById(newOrder.id)
+    console.log('Pedido salvo no banco:', savedOrder)
+
     return {
       order: newOrder,
     }
