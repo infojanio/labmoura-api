@@ -3,65 +3,75 @@ import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 
 export async function refresh(request: FastifyRequest, reply: FastifyReply) {
-  console.log('REQUEST BODY:', request.body) // Debug para ver se o body está chegando
+  console.log('🚀 Recebendo requisição de refresh token...')
+  console.log('REQUEST BODY:', request.body)
 
-  const body = request.body as any
-  if (!body || typeof body !== 'object') {
+  if (!request.body || typeof request.body !== 'object') {
+    console.log('❌ Nenhum corpo de requisição recebido!')
     return reply.status(400).send({ message: 'Invalid request body' })
   }
 
-  const { refreshToken } = body as { refreshToken?: string }
+  const { refreshToken } = request.body as { refreshToken?: string }
 
   if (!refreshToken) {
-    console.log('Refresh token ausente no corpo da requisição!')
+    console.log('❌ Refresh token ausente no corpo da requisição!')
     return reply.status(400).send({ message: 'Refresh token is required' })
   }
 
+  // Verifica se o token existe no banco de dados
+  const storedToken = await prisma.refreshToken.findUnique({
+    where: { token: refreshToken },
+  })
+
+  if (!storedToken) {
+    console.log('❌ Refresh token inválido!')
+    return reply.status(401).send({ message: 'Invalid refresh token' })
+  }
+
   try {
-    // 1️⃣ Verifica se o refresh token existe no banco
-    const storedToken = await prisma.refreshToken.findUnique({
-      where: { token: refreshToken },
-    })
-
-    if (!storedToken) {
-      return reply.status(401).send({ message: 'Invalid refresh token' })
-    }
-
-    // 2️⃣ Verifica se o token é válido
+    // Verifica e decodifica o token
     const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET!) as {
       sub: string
       role: string
     }
 
+    console.log('✅ Token decodificado:', decoded)
+
     const { sub: userId, role } = decoded
 
-    // 3️⃣ Gera um novo access token
+    // Gera um novo access token
     const newAccessToken = await reply.jwtSign(
       { role },
       { sign: { sub: userId, expiresIn: '15m' } },
     )
 
-    // 4️⃣ Gera um novo refresh token e salva no banco
+    // Define uma nova data de expiração (7 dias a partir de agora)
+    const newExpiresAt = new Date()
+    newExpiresAt.setDate(newExpiresAt.getDate() + 7)
+
+    // Gera um novo refresh token
     const newRefreshToken = await reply.jwtSign(
       { role },
       { sign: { sub: userId, expiresIn: '7d' } },
     )
 
-    await prisma.refreshToken.create({
+    // Atualiza o refresh token no banco
+    await prisma.refreshToken.update({
+      where: { token: refreshToken },
       data: {
-        userId,
         token: newRefreshToken,
+        expiresAt: newExpiresAt, // Atualizando a data de expiração
       },
     })
 
-    // 5️⃣ Remove o refresh token antigo do banco
-    await prisma.refreshToken.delete({ where: { token: refreshToken } })
+    console.log('✅ Novo refresh token gerado e atualizado no banco!')
 
     return reply.status(200).send({
       accessToken: newAccessToken,
       refreshToken: newRefreshToken,
     })
   } catch (error) {
+    console.log('❌ Erro ao validar o refresh token:', error)
     return reply.status(401).send({ message: 'Invalid refresh token' })
   }
 }
