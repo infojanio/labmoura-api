@@ -3,10 +3,17 @@ import { prisma } from '@/lib/prisma'
 import jwt from 'jsonwebtoken'
 
 export async function refresh(request: FastifyRequest, reply: FastifyReply) {
-  console.log('REQUEST BODY:', request.body)
-  const { refreshToken } = request.body as { refreshToken: string }
+  console.log('REQUEST BODY:', request.body) // Debug para ver se o body está chegando
+
+  const body = request.body as any
+  if (!body || typeof body !== 'object') {
+    return reply.status(400).send({ message: 'Invalid request body' })
+  }
+
+  const { refreshToken } = body as { refreshToken?: string }
 
   if (!refreshToken) {
+    console.log('Refresh token ausente no corpo da requisição!')
     return reply.status(400).send({ message: 'Refresh token is required' })
   }
 
@@ -43,7 +50,6 @@ export async function refresh(request: FastifyRequest, reply: FastifyReply) {
     await prisma.refreshToken.create({
       data: {
         userId,
-        expiresAt: new Date(),
         token: newRefreshToken,
       },
     })

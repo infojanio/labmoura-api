@@ -40,7 +40,7 @@ export async function authenticate(
     await prisma.refreshToken.create({
       data: {
         userId: user.id,
-        expiresAt: new Date(),
+        //expiresAt,
         token: refreshToken,
       },
     })
