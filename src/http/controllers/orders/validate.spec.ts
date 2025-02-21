@@ -3,7 +3,7 @@ import { app } from '@/app'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
-describe('Validate Check-in (e2e)', () => {
+describe('Validate Order (e2e)', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -11,7 +11,7 @@ describe('Validate Check-in (e2e)', () => {
     await app.close()
   })
   it('should be able to validate a order', async () => {
-    const { token } = await createAndAuthenticateUser(app)
+    const { token } = await createAndAuthenticateUser(app, true)
     const user = await prisma.user.findFirstOrThrow()
     const store = await prisma.store.create({
       data: {
@@ -26,6 +26,9 @@ describe('Validate Check-in (e2e)', () => {
         store_id: store.id,
         user_id: user.id,
         totalAmount: 0,
+        validated_at: new Date(),
+        status: 'VALIDATED',
+        created_at: new Date(),
       },
     })
     const response = await request(app.server)

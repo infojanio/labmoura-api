@@ -10,7 +10,8 @@ export async function usersRoutes(app: FastifyInstance) {
   /* Rotas acessíveis para usuário não autenticado */
   app.post('/users', register)
   app.post('/sessions', authenticate)
-  app.patch('/token/refresh', refresh)
+
+  app.post('/token/refresh', refresh) //pega o token e atualiza
 
   app.get('/me', { onRequest: [verifyJWT] }, profile)
   /* Rotas exclusivas para usuário autenticado */

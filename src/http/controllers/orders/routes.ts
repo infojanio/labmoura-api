@@ -4,12 +4,18 @@ import { create } from './create'
 import { validate } from './validate'
 import { history } from './history'
 import { balance } from './balance'
+import { verifyUserRole } from '@/http/middlewares/verify-user-role'
 
 export async function ordersRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
   app.get('/orders/history', history)
   app.get('/orders/balance', balance)
   app.post('/stores/:storeId/orders', create)
-  app.post('/stores/:storeId/orders', { onRequest: [verifyJWT] }, create)
-  app.patch('/orders/:orderId/validate', validate)
+  //app.post('/stores/:storeId/orders', { onRequest: [verifyJWT] }, create)
+
+  app.patch(
+    '/orders/:orderInId/validate',
+    { onRequest: [verifyUserRole('ADMIN')] },
+    validate,
+  )
 }

@@ -4,7 +4,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 import { prisma } from '@/lib/prisma'
 
-describe('Create Order (e2e)', () => {
+describe('To do Balance (e2e)', () => {
   beforeAll(async () => {
     await app.ready()
     console.log('Server is ready for testing!')
@@ -19,7 +19,7 @@ describe('Create Order (e2e)', () => {
     await prisma.store.deleteMany() // Limpa as lojas para evitar conflitos
   })
 
-  it('should be able to create an order', async () => {
+  it('should be able to do an balance', async () => {
     const { token } = await createAndAuthenticateUser(app, true) //USER->FALSE
 
     const store = await prisma.store.create({

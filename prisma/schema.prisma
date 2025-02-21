@@ -11,18 +11,20 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
+  id           String  @id @default(uuid())
   name         String
-  email        String     @unique
-  passwordHash String     @map("password_hash")
+  email        String  @unique
+  passwordHash String  @map("password_hash")
   phone        String
-  role         Role       @default(USER)
+  role         Role    @default(USER)
   avatar       String?
+
   //address      Address?
   address      Address[] // Relacionamento com o endereço
   orders       Order[]
   cashbacks    Cashback[]
-  created_at   DateTime   @default(now()) @map("created_at")
+  created_at   DateTime       @default(now()) @map("created_at")
+  RefreshToken RefreshToken[]
 
   @@map("users")
 }
@@ -145,6 +147,15 @@ model PaymentType {
   created_at DateTime @default(now())
 
   @@map("payment_types")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
 }
 
 enum Role {

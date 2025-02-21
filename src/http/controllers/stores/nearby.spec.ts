@@ -10,7 +10,7 @@ describe('Nearby Stores (e2e)', () => {
     await app.close()
   })
   it('should be able list nearby stores', async () => {
-    const { token } = await createAndAuthenticateUser(app)
+    const { token } = await createAndAuthenticateUser(app, true)
 
     // Criando lojas dentro do raio permitido (<= 40 km)
     await request(app.server)

@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error'
 import { makeAuthenticateUseCase } from '@/use-cases/factories/make-authenticate-use-case'
+import { prisma } from '@/lib/prisma'
+import bcrypt from 'bcryptjs'
 
 export async function authenticate(
   request: FastifyRequest,
@@ -11,45 +13,42 @@ export async function authenticate(
     email: z.string().email(),
     password: z.string().min(6),
   })
-  const { email, password } = authenticateBodySchema.parse(request.body)
-  try {
-    const authenticateUseCase = makeAuthenticateUseCase() //importado de factory
 
-    const { user } = await authenticateUseCase.execute({
-      email,
-      password,
-    })
+  const { email, password } = authenticateBodySchema.parse(request.body)
+
+  try {
+    const authenticateUseCase = makeAuthenticateUseCase()
+    const { user } = await authenticateUseCase.execute({ email, password })
+
+    // Comparação da senha digitada com o hash do banco de dados
+    const passwordMatch = await bcrypt.compare(password, user.passwordHash)
+    if (!passwordMatch) {
+      return reply.status(400).send({ message: 'Invalid credentials' })
+    }
 
     const token = await reply.jwtSign(
-      {},
-      {
-        sign: {
-          sub: user.id,
-        },
-      },
+      { role: user.role },
+      { sign: { sub: user.id, expiresIn: '15m' } },
     )
 
     const refreshToken = await reply.jwtSign(
-      {},
-      {
-        sign: {
-          sub: user.id,
-          expiresIn: '7d',
-        },
-      },
+      { role: user.role },
+      { sign: { sub: user.id, expiresIn: '7d' } },
     )
 
-    return reply
-      .setCookie('refreshToken', refreshToken, {
-        path: '/',
-        secure: true,
-        sameSite: true,
-        httpOnly: true,
-      })
-      .status(200)
-      .send({
-        token,
-      })
+    // Salva o refresh token no banco de dados
+    await prisma.refreshToken.create({
+      data: {
+        userId: user.id,
+        expiresAt: new Date(),
+        token: refreshToken,
+      },
+    })
+
+    return reply.status(200).send({
+      accessToken: token,
+      refreshToken,
+    })
   } catch (err) {
     if (err instanceof InvalidCredentialsError) {
       return reply.status(400).send({ message: err.message })

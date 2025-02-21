@@ -11,7 +11,7 @@ describe('Create Order (e2e)', () => {
     await app.close()
   })
   it('should be able to create a order', async () => {
-    const { token } = await createAndAuthenticateUser(app)
+    const { token } = await createAndAuthenticateUser(app, true)
     const store = await prisma.store.create({
       data: {
         name: 'Loja Teste',
