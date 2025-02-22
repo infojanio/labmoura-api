@@ -11,7 +11,7 @@ describe('Order History (e2e)', () => {
     await app.close()
   })
   it('should be able to list the history of orders', async () => {
-    const { token } = await createAndAuthenticateUser(app)
+    const { accessToken } = await createAndAuthenticateUser(app, true)
 
     const user = await prisma.user.findFirstOrThrow() //busca o 1 user cadastrado no banco
     const store = await prisma.store.create({
@@ -40,7 +40,7 @@ describe('Order History (e2e)', () => {
     })
     const response = await request(app.server)
       .get('/orders/history')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send()
     expect(response.statusCode).toEqual(200)
     expect(response.body.orders).toEqual([

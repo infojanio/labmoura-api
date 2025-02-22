@@ -11,10 +11,10 @@ describe('Create Store (e2e)', () => {
   })
   it('should be able to create a store', async () => {
     // 🔹 Criar um usuário ADMIN autenticado para permitir a criação de loja
-    const { token } = await createAndAuthenticateUser(app, true) // Passa 'true' para criar um admin
+    const { accessToken } = await createAndAuthenticateUser(app, true) // Passa 'true' para criar um admin
     const response = await request(app.server)
       .post('/stores')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'loja-02',
         slug: 'foto02.jpg',

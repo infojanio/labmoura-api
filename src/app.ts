@@ -10,7 +10,7 @@ import { ZodError } from 'zod'
 import { env } from './.env'
 
 export const app = fastify({
-  logger: true,
+  // logger: true,
 })
 // Habilita JSON no body
 app.register(fastifyFormBody)

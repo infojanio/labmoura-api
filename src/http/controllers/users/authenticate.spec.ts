@@ -9,31 +9,47 @@ describe('Authenticate (e2e)', () => {
   afterAll(async () => {
     await app.close()
   })
+
   it('should be able to authenticate', async () => {
-    await request(app.server).post('/users').send({
+    // Criando um usuário para teste
+    const registerResponse = await request(app.server).post('/users').send({
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
       phone: '6299775614',
-      role: 'USER',
+      role: 'ADMIN',
       avatar: 'perfil.png',
     })
+    console.log('🟢 Register Response:', registerResponse.body) // 🔹 Debug do usuário criado
+    expect(registerResponse.statusCode).toEqual(201)
+
+    // Autenticando o usuário
     const authResponse = await request(app.server).post('/sessions').send({
       email: 'johndoe@example.com',
       password: '123456',
     })
+    console.log('🟡 Auth Response:', authResponse.body) // 🔹 Debug da autenticação
 
-    const cookies = authResponse.headers['set-cookie'] // Captura os cookies
+    expect(authResponse.statusCode).toEqual(200)
+    expect(authResponse.body).toHaveProperty('accessToken')
+    expect(authResponse.body).toHaveProperty('refreshToken')
 
-    //console.log('Auth Response Headers:', response.headers['set-cookie'])
+    // Pegando o refreshToken do corpo da resposta
+    const { refreshToken } = authResponse.body
 
-    // Faz a requisição de refresh token usando o cookie
-    const response = await request(app.server)
+    if (!refreshToken) {
+      throw new Error('❌ Erro: Refresh token não retornado na autenticação!')
+    }
+    console.log('🔵 Enviando Refresh Token:', refreshToken) // 🔹 Debug do refreshToken antes da requisição
+
+    // Faz a requisição de refresh token enviando pelo corpo da requisição
+    const refreshResponse = await request(app.server)
       .patch('/token/refresh')
-      .set('Cookie', cookies) // Envia os cookies armazenados
-      .send()
+      .send({ refreshToken })
 
-    expect(response.statusCode).toEqual(200)
-    expect(response.body).toHaveProperty('token') // O novo token deve ser retornado
+    console.log('🔴 Refresh Token Response:', refreshResponse.body) // 🔹 Debug da resposta
+
+    expect(refreshResponse.statusCode).toEqual(200)
+    expect(refreshResponse.body).toHaveProperty('accessToken') // O novo token deve ser retornado
   })
 })

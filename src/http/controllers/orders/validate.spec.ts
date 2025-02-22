@@ -11,7 +11,7 @@ describe('Validate Order (e2e)', () => {
     await app.close()
   })
   it('should be able to validate a order', async () => {
-    const { token } = await createAndAuthenticateUser(app, true)
+    const { accessToken } = await createAndAuthenticateUser(app, true)
     const user = await prisma.user.findFirstOrThrow()
     const store = await prisma.store.create({
       data: {
@@ -33,7 +33,7 @@ describe('Validate Order (e2e)', () => {
     })
     const response = await request(app.server)
       .patch(`/orders/${order.id}/validate`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send()
     expect(response.statusCode).toEqual(204)
     order = await prisma.order.findUniqueOrThrow({

@@ -10,10 +10,10 @@ describe('Search Stores (e2e)', () => {
     await app.close()
   })
   it('should be able to search stores by name', async () => {
-    const { token } = await createAndAuthenticateUser(app, true)
+    const { accessToken } = await createAndAuthenticateUser(app, true)
     await request(app.server)
       .post('/stores')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'JavaScript Gym',
         slug: 'Some description.',
@@ -22,7 +22,7 @@ describe('Search Stores (e2e)', () => {
       })
     await request(app.server)
       .post('/stores')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'TypeScript Gym',
         slug: 'Some description.',
@@ -34,7 +34,7 @@ describe('Search Stores (e2e)', () => {
       .query({
         name: 'JavaScript',
       })
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send()
     expect(response.statusCode).toEqual(200)
     expect(response.body.stores).toHaveLength(1)

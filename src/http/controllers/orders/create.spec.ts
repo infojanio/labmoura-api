@@ -11,7 +11,7 @@ describe('Create Order (e2e)', () => {
     await app.close()
   })
   it('should be able to create a order', async () => {
-    const { token } = await createAndAuthenticateUser(app, true)
+    const { accessToken } = await createAndAuthenticateUser(app, true)
     const store = await prisma.store.create({
       data: {
         name: 'Loja Teste',
@@ -22,11 +22,12 @@ describe('Create Order (e2e)', () => {
     })
     const response = await request(app.server)
       .post(`/stores/${store.id}/orders`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         latitude: -27.2092052,
         longitude: -49.6401091,
       })
+    console.log('Response create order:', response.body)
     expect(response.statusCode).toEqual(201)
   })
 })

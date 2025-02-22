@@ -10,12 +10,12 @@ describe('Nearby Stores (e2e)', () => {
     await app.close()
   })
   it('should be able list nearby stores', async () => {
-    const { token } = await createAndAuthenticateUser(app, true)
+    const { accessToken } = await createAndAuthenticateUser(app, true)
 
     // Criando lojas dentro do raio permitido (<= 40 km)
     await request(app.server)
       .post('/stores')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Loja Arraias',
         slug: 'Some description.',
@@ -26,7 +26,7 @@ describe('Nearby Stores (e2e)', () => {
     // Criando uma loja FORA do raio permitido (> 40 km)
     await request(app.server)
       .post('/stores')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         name: 'Loja Alto Paraíso',
         slug: 'Some description.',
@@ -41,7 +41,7 @@ describe('Nearby Stores (e2e)', () => {
         latitude: -13.0382409, //localização do cliente
         longitude: -46.7712408, //localização do cliente
       })
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send()
     expect(response.statusCode).toEqual(200)
     expect(response.body.stores).toHaveLength(1)

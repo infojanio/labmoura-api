@@ -20,7 +20,8 @@ describe('To do Balance (e2e)', () => {
   })
 
   it('should be able to do an balance', async () => {
-    const { token } = await createAndAuthenticateUser(app, true) //USER->FALSE
+    const { accessToken } = await createAndAuthenticateUser(app, true) //USER->FALSE
+    console.log('Generated accessToken:', accessToken) // ✅ Verificar se o accessToken foi gerado corretamente
 
     const store = await prisma.store.create({
       data: {
@@ -35,7 +36,7 @@ describe('To do Balance (e2e)', () => {
 
     const response = await request(app.server)
       .post(`/stores/${store.id}/orders`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${accessToken}`)
       .send({
         latitude: -27.2092052,
         longitude: -49.6401091,

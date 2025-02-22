@@ -113,8 +113,8 @@ describe('Order Use Case', () => {
     storesRepository.items.push({
       id: 'loja-02',
       name: 'Loja do Braz',
-      latitude: new Decimal(-46.7780831),
-      longitude: new Decimal(-13.0301369),
+      latitude: new Decimal(-13.0301369),
+      longitude: new Decimal(-46.7780831),
       slug: 'logo.png',
       created_at: new Date(),
     })
@@ -124,8 +124,8 @@ describe('Order Use Case', () => {
         storeId: 'loja-02',
         userId: 'user-01',
         totalAmount: 200,
-        userLatitude: -46.9355272,
-        userLongitude: -12.9332477,
+        userLatitude: -23.0301369,
+        userLongitude: -46.6333831,
         validated_at: new Date(),
         status: 'VALIDATED',
         created_at: new Date(),
