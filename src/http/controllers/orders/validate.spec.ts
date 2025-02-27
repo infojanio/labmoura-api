@@ -25,9 +25,9 @@ describe('Validate Order (e2e)', () => {
       data: {
         store_id: store.id,
         user_id: user.id,
-        totalAmount: 0,
-        validated_at: new Date(),
-        status: 'VALIDATED',
+        totalAmount: 100,
+        validated_at: null,
+        status: 'PENDING',
         created_at: new Date(),
       },
     })
@@ -35,12 +35,17 @@ describe('Validate Order (e2e)', () => {
       .patch(`/orders/${order.id}/validate`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
+
+    console.log('🔵 Response:', response.statusCode, response.body)
+
     expect(response.statusCode).toEqual(204)
     order = await prisma.order.findUniqueOrThrow({
       where: {
         id: order.id,
       },
     })
+    console.log('✅ Pedido atualizado:', order)
+
     expect(order.validated_at).toEqual(expect.any(Date))
   })
 })

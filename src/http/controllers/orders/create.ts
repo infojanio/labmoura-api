@@ -4,7 +4,8 @@ import { makeOrderUseCase } from '@/use-cases/factories/make-order-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createOrderParamsSchema = z.object({
-    storeId: z.string().uuid(),
+    userId: z.string().uuid({ message: 'ID do usuário inválido' }),
+    storeId: z.string().uuid({ message: 'ID da loja inválido' }),
   })
 
   const createOrderBodySchema = z.object({
@@ -14,28 +15,56 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     longitude: z.number().refine((value) => Math.abs(value) <= 180, {
       message: 'Longitude inválida',
     }),
-    totalAmount: z.number().positive(),
+    totalAmount: z
+      .number()
+      .positive({ message: 'O total deve ser maior que zero' }),
+    validated_at: z.union([z.string().datetime(), z.null()]).optional(),
+    status: z.enum(['PENDING', 'VALIDATED', 'EXPIRED']),
+    items: z
+      .array(
+        z.object({
+          productId: z.string().uuid({ message: 'ID do produto inválido' }),
+          quantity: z
+            .number()
+            .int()
+            .positive({ message: 'Quantidade deve ser um número positivo' }),
+          subtotal: z
+            .number()
+            .positive({ message: 'Subtotal deve ser maior que zero' }),
+        }),
+      )
+      .min(1, { message: 'O pedido deve ter pelo menos um item' }),
   })
 
-  // Pegando os dados corretos do request
-  const { storeId } = createOrderParamsSchema.parse(request.params)
-  const { latitude, longitude, totalAmount } = createOrderBodySchema.parse(
-    request.body,
-  )
+  try {
+    // Validação dos parâmetros e do corpo da requisição
+    const validatedParams = createOrderParamsSchema.parse(request.params)
+    const validatedData = createOrderBodySchema.parse(request.body)
 
-  // Criando o pedido
-  const orderUseCase = makeOrderUseCase()
+    const orderUseCase = makeOrderUseCase()
 
-  const newOrder = await orderUseCase.execute({
-    storeId,
-    userId: request.user.sub, // ID do usuário do JWT
-    userLatitude: latitude,
-    userLongitude: longitude,
-    status: 'PENDING', // O status deve ser definido corretamente
-    totalAmount,
-    validated_at: new Date(), // Ainda não validado
-    created_at: new Date(),
-  })
+    const { order } = await orderUseCase.execute({
+      ...validatedParams,
+      userLatitude: validatedData.latitude,
+      userLongitude: validatedData.longitude,
+      totalAmount: validatedData.totalAmount,
+      validated_at: validatedData.validated_at
+        ? new Date(validatedData.validated_at)
+        : null,
+      created_at: new Date(),
+      status: validatedData.status,
+      items: validatedData.items,
+    })
 
-  return reply.status(201).send({ order: newOrder })
+    return reply.status(201).send(order)
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return reply.status(400).send({
+        message: 'Erro de validação',
+        errors: error.flatten().fieldErrors,
+      })
+    }
+
+    return reply.status(500).send({ message: 'Erro interno no servidor' })
+  }
 }

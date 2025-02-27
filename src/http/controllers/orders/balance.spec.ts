@@ -1,54 +1,65 @@
-import request from 'supertest'
-import { app } from '@/app'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
-import { prisma } from '@/lib/prisma'
+import { describe, expect, it, beforeEach } from 'vitest'
 
-describe('To do Balance (e2e)', () => {
-  beforeAll(async () => {
-    await app.ready()
-    console.log('Server is ready for testing!')
+import { OrderUseCase } from '@/use-cases/order'
+import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-stores-repository'
+import { OrderStatus } from '@prisma/client'
+import { PrismaOrderItemsRepository } from '@/repositories/prisma/prisma-order-items-repository'
+import { PrismaOrdersRepository } from '@/repositories/prisma/prisma-orders-repository'
+
+let ordersRepository: PrismaOrdersRepository
+let orderItemsRepository: PrismaOrderItemsRepository
+let storesRepository: InMemoryStoresRepository
+let sut: OrderUseCase
+
+describe('Balance Calculation Use Case', () => {
+  beforeEach(() => {
+    ordersRepository = new PrismaOrdersRepository()
+    orderItemsRepository = new PrismaOrderItemsRepository()
+    storesRepository = new InMemoryStoresRepository()
+    sut = new OrderUseCase(
+      ordersRepository,
+      storesRepository,
+      //  orderItemsRepository,
+    )
   })
 
-  afterAll(async () => {
-    await app.close()
-  })
-
-  beforeEach(async () => {
-    await prisma.order.deleteMany() // Limpa os pedidos antes de cada teste
-    await prisma.store.deleteMany() // Limpa as lojas para evitar conflitos
-  })
-
-  it('should be able to do an balance', async () => {
-    const { accessToken } = await createAndAuthenticateUser(app, true) //USER->FALSE
-    console.log('Generated accessToken:', accessToken) // ✅ Verificar se o accessToken foi gerado corretamente
-
-    const store = await prisma.store.create({
-      data: {
-        name: 'Loja Teste',
-        slug: 'loja-teste',
-        latitude: -27.2092052,
-        longitude: -49.6401091,
-      },
+  it('deve calcular corretamente o saldo do usuário', async () => {
+    const store = await storesRepository.create({
+      id: 'store-01',
+      name: 'Loja Teste',
+      latitude: -23.55052,
+      longitude: -46.633308,
     })
 
-    console.log('Store ID:', store.id) // Debug para verificar se a loja foi criada corretamente
+    const { order: order1 } = await sut.execute({
+      userId: 'user-01',
+      storeId: store.id,
+      userLatitude: -23.55052,
+      userLongitude: -46.633308,
+      totalAmount: 80,
+      validated_at: new Date(),
+      created_at: new Date(),
+      status: OrderStatus.VALIDATED,
+      items: [
+        { productId: 'product-01', quantity: 1, subtotal: 50 },
+        { productId: 'product-02', quantity: 1, subtotal: 30 },
+      ],
+    })
 
-    const response = await request(app.server)
-      .post(`/stores/${store.id}/orders`)
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        latitude: -27.2092052,
-        longitude: -49.6401091,
-        total: 150.5, // Supondo que seja necessário um total
-        items: [
-          { productId: 'prod-1', quantity: 2 },
-          { productId: 'prod-2', quantity: 1 },
-        ],
-      })
+    const { order: order2 } = await sut.execute({
+      userId: 'user-01',
+      storeId: store.id,
+      userLatitude: -23.55052,
+      userLongitude: -46.633308,
+      totalAmount: 120,
+      validated_at: new Date(),
+      created_at: new Date(),
+      status: OrderStatus.VALIDATED,
+      items: [{ productId: 'product-03', quantity: 2, subtotal: 60 }],
+    })
 
-    console.log('Order Response:', response.body) // Verificar resposta da API
+    const balance = await ordersRepository.balanceByUserId('user-01')
 
-    expect(response.statusCode).toEqual(201)
+    expect(balance).toBe(200) // 80 + 120
   })
 })

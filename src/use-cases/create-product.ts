@@ -1,12 +1,12 @@
 import { ProductsRepository } from '@/repositories/products-repository'
 import { Product } from '@prisma/client'
 interface CreateProductUseCaseRequest {
-  id: string
+  //id: string
   name: string
-  description: string
+  description: string | null
   price: number
   quantity: number
-  image: string
+  image: string | null
   status: boolean
   cashbackPercentage: number // Define um valor padrão caso não seja informado.
   store_id: string
@@ -19,7 +19,7 @@ interface CreateProductUseCaseResponse {
 export class CreateProductUseCase {
   constructor(private productsRepository: ProductsRepository) {}
   async execute({
-    id,
+    // id,
     name,
     description,
     price,
@@ -29,10 +29,9 @@ export class CreateProductUseCase {
     cashbackPercentage,
     store_id,
     subcategory_id,
-    created_at,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     const product = await this.productsRepository.create({
-      id,
+      // id,
       name,
       description,
       price,
@@ -42,7 +41,6 @@ export class CreateProductUseCase {
       cashbackPercentage,
       store_id,
       subcategory_id,
-      created_at,
     })
     return {
       product,

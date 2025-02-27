@@ -1,10 +1,11 @@
+import { prisma } from '@/lib/prisma'
 import {
   FindManyNearbyParams,
   StoresRepository,
 } from '@/repositories/stores-repository'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 
-import { Prisma, Store } from '@prisma/client'
+import { OrderItem, Prisma, Store } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 export class InMemoryStoresRepository implements StoresRepository {
@@ -30,6 +31,12 @@ export class InMemoryStoresRepository implements StoresRepository {
       return null
     }
     return store
+  }
+
+  async findByOrderId(orderId: string): Promise<OrderItem[]> {
+    return prisma.orderItem.findMany({
+      where: { order_id: orderId },
+    })
   }
 
   async searchMany(query: string, page: number) {

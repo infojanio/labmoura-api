@@ -3,13 +3,13 @@ import { Decimal } from '@prisma/client/runtime/library'
 
 export interface OrdersRepository {
   create(data: Prisma.OrderUncheckedCreateInput): Promise<Order>
+
+  createOrderItems(
+    orderId: string,
+    items: { productId: string; quantity: number; subtotal: number }[],
+  ): Promise<void>
+
   findById(id: string): Promise<Order | null>
-  /*findByUserIdOnDate(userId: string, date: Date): Promise<Order | null>
-  findByUserIdOnHour(
-    userId: string,
-    date: Date,
-  ): Promise<Order | boolean | null>
-  */
   findByUserIdLastHour(
     userId: string,
     date: Date,

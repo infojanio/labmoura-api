@@ -22,7 +22,7 @@ app.register(storesRoutes)
 app.register(ordersRoutes)
 
 app.addHook('preHandler', async (request, reply) => {
-  console.log('REQUEST BODY:', request.body)
+  //console.log('REQUEST BODY:', request.body)
 })
 
 app.setErrorHandler((error, _request, reply) => {

@@ -26,8 +26,9 @@ export async function createAndAuthenticateUser(
 
   const { accessToken } = authResponse.body
   // console.log('Token Gerado:', authResponse.body)
-  console.log('Token Aqui:', accessToken)
+  //console.log('Token Aqui:', accessToken)
   return {
     accessToken,
+    user,
   }
 }

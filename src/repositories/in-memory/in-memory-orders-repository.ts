@@ -8,6 +8,45 @@ export class InMemoryOrdersRepository implements OrdersRepository {
   public orders: Order[] = []
   public cashbacks: Cashback[] = []
 
+  public orderItems: {
+    id: string
+    order_id: string
+    product_id: string
+    quantity: number
+    subtotal: number
+  }[] = []
+
+  async createOrderItems(
+    orderId: string,
+    items: { productId: string; quantity: number; subtotal: number }[],
+  ): Promise<void> {
+    const orderExists = this.orders.find((order) => order.id === orderId)
+
+    if (!orderExists) {
+      throw new Error('Pedido não encontrado.')
+    }
+
+    items.forEach((item) => {
+      this.orderItems.push({
+        id: randomUUID(),
+        order_id: orderId,
+        product_id: item.productId,
+        quantity: item.quantity,
+        subtotal: item.subtotal,
+      })
+    })
+  }
+
+  async create(data: Omit<Order, 'id'>): Promise<Order> {
+    const newOrder: Order = {
+      id: randomUUID(),
+      ...data,
+    }
+
+    this.items.push(newOrder)
+    return newOrder
+  }
+
   async balanceByUserId(userId: string): Promise<number> {
     const userCashbacks = this.cashbacks.filter((cashback) => {
       const relatedOrder = this.orders.find(
@@ -49,21 +88,6 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     return this.items
       .filter((item) => item.user_id === userId)
       .slice((page - 1) * 20, page * 20)
-  }
-
-  async create(data: Prisma.OrderUncheckedCreateInput) {
-    //async create(data: Order) {
-    const newOrder = {
-      id: randomUUID(),
-      user_id: data.user_id,
-      store_id: data.store_id,
-      totalAmount: new Decimal(200), //data.totalAmount || new Decimal(200),
-      status: data.status || 'PENDING', // Valor padrão
-      validated_at: data.validated_at ? new Date(data.validated_at) : null,
-      created_at: data.created_at || new Date(),
-    }
-    this.items.push(newOrder)
-    return newOrder
   }
 
   //encontra pedido feito no início do dia e no fim do dia

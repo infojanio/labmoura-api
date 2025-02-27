@@ -9,12 +9,12 @@ import { verifyUserRole } from '@/http/middlewares/verify-user-role'
 export async function ordersRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
   app.get('/orders/history', history)
-  app.get('/orders/balance', balance)
+  //app.get('/orders/balance', balance)
   app.post('/stores/:storeId/orders', create)
   //app.post('/stores/:storeId/orders', { onRequest: [verifyJWT] }, create)
 
   app.patch(
-    '/orders/:orderInId/validate',
+    '/orders/:orderId/validate',
     { onRequest: [verifyUserRole('ADMIN')] },
     validate,
   )

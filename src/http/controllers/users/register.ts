@@ -18,8 +18,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     phone: z.string(),
     role: z.nativeEnum(Role), // 🔹 Agora valida apenas os valores do enum
     avatar: z.string(),
-    //  address_id: z.string(),
-    // created_at: z.date(),
   })
 
   const {
@@ -30,8 +28,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     phone,
     role,
     avatar,
-    // address_id,
-    // created_at,
   } = registerBodySchema.parse(request.body)
 
   try {
@@ -45,8 +41,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       phone,
       role,
       avatar,
-      //address_id,
-      // created_at,
     })
 
     console.log('✅ Usuário criado:', user) // 🔹 Verifica se o usuário foi realmente criado
@@ -55,8 +49,6 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     if (error instanceof UserAlreadyExistsError) {
       return reply.status(409).send({ message: error.message })
     }
-    throw error
+    return reply.status(201).send()
   }
-
-  return reply.status(201).send()
 }

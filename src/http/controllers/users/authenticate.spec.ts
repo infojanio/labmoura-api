@@ -17,7 +17,7 @@ describe('Authenticate (e2e)', () => {
       email: 'johndoe@example.com',
       password: '123456',
       phone: '6299775614',
-      role: 'ADMIN',
+      role: 'USER',
       avatar: 'perfil.png',
     })
     console.log('🟢 Register Response:', registerResponse.body) // 🔹 Debug do usuário criado

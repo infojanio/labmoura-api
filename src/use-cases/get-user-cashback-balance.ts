@@ -9,10 +9,7 @@ interface GetUserCashbackBalanceUseCaseResponse {
 }
 
 export class GetUserCashbackBalanceUseCase {
-  constructor(
-    //  private ordersRepository: OrdersRepository,
-    private cashbacksRepository: CashbacksRepository,
-  ) {}
+  constructor(private cashbacksRepository: CashbacksRepository) {}
 
   async execute(
     request: GetUserCashbackBalanceUseCaseRequest,
