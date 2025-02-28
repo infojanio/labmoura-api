@@ -8,6 +8,7 @@ import { storesRoutes } from '@/http/controllers/stores/routes'
 import { ordersRoutes } from './http/controllers/orders/routes'
 import { ZodError } from 'zod'
 import { env } from './.env'
+import { productsRoutes } from './http/controllers/products/routes'
 
 export const app = fastify({
   // logger: true,
@@ -20,6 +21,7 @@ app.register(fastifyCors)
 app.register(usersRoutes)
 app.register(storesRoutes)
 app.register(ordersRoutes)
+app.register(productsRoutes)
 
 app.addHook('preHandler', async (request, reply) => {
   //console.log('REQUEST BODY:', request.body)

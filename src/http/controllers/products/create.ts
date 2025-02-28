@@ -4,8 +4,8 @@ import { makeCreateProductUseCase } from '@/use-cases/factories/make-create-prod
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createProductParamsSchema = z.object({
-    storeId: z.string().uuid({ message: 'ID da loja inválida' }),
-    subcategoryId: z.string().uuid({ message: 'ID da subcategoria inválida' }),
+    storeId: z.string(),
+    subcategoryId: z.string(),
   })
 
   const createProductBodySchema = z.object({
@@ -31,8 +31,9 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 
     const { product } = await productUseCase.execute({
       ...validatedParams,
-      store_id: validatedParams.storeId,
-      subcategory_id: validatedParams.subcategoryId,
+      ...validatedData,
+      storeId: validatedParams.storeId,
+      subcategoryId: validatedParams.subcategoryId,
       name: validatedData.name,
       description: validatedData.description,
       price: validatedData.price,
@@ -40,7 +41,6 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
       image: validatedData.image,
       cashbackPercentage: validatedData.cashbackPercentage,
       status: validatedData.status,
-      created_at: new Date(),
     })
     console.log('Produto:', product)
     return reply.status(201).send(product)
@@ -51,7 +51,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
         errors: error.flatten().fieldErrors,
       })
     }
-
+    console.error('Erro interno:', error) // 🔹 Log detalhado do erro
     return reply.status(500).send({ message: 'Erro interno no servidor' })
   }
 }

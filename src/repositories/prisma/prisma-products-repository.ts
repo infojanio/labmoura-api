@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { Product, Prisma } from '@prisma/client'
 import { ProductsRepository } from '../products-repository'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 export class PrismaProductsRepository implements ProductsRepository {
   async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
@@ -36,17 +37,14 @@ export class PrismaProductsRepository implements ProductsRepository {
     productId: string,
     data: Prisma.ProductUncheckedUpdateInput,
   ): Promise<Product> {
-    // Valida se o produto existe antes de tentar atualizar
-    const existingProduct = await this.findById(productId)
-    if (!existingProduct) {
-      throw new Error('Product not found')
+    try {
+      return await prisma.product.update({
+        where: { id: productId },
+        data,
+      })
+    } catch (error) {
+      throw new ResourceNotFoundError()
     }
-    // Atualiza o produto no banco de dados
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data,
-    })
-    return updatedProduct
   }
 
   async delete(where: Prisma.ProductWhereUniqueInput): Promise<Product> {

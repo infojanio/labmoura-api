@@ -1,49 +1,74 @@
-import { ProductsRepository } from '@/repositories/products-repository'
 import { Product } from '@prisma/client'
+import { ProductsRepository } from '@/repositories/products-repository'
+import { StoresRepository } from '@/repositories/stores-repository'
+import { SubCategoriesRepository } from '@/repositories/subcategories-repository'
+import { ResourceNotFoundError } from './errors/resource-not-found-error'
+import { error } from 'console'
+
 interface CreateProductUseCaseRequest {
-  //id: string
   name: string
-  description: string | null
+  description?: string | null
   price: number
   quantity: number
-  image: string | null
+  image?: string | null
+  cashbackPercentage: number
   status: boolean
-  cashbackPercentage: number // Define um valor padrão caso não seja informado.
-  store_id: string
-  subcategory_id: string
-  created_at: Date
+  storeId: string
+  subcategoryId: string
 }
+
 interface CreateProductUseCaseResponse {
   product: Product
 }
+
 export class CreateProductUseCase {
-  constructor(private productsRepository: ProductsRepository) {}
+  constructor(
+    private productsRepository: ProductsRepository,
+    private storesRepository: StoresRepository,
+    private subcategoriesRepository: SubCategoriesRepository,
+  ) {}
+
   async execute({
-    // id,
     name,
     description,
     price,
     quantity,
     image,
-    status,
     cashbackPercentage,
-    store_id,
-    subcategory_id,
+    status,
+    storeId,
+    subcategoryId,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
+    // Verifica se a loja existe
+
+    const storeExists = await this.storesRepository.findById(storeId)
+    if (!storeExists) {
+      throw new Error('não possui loja cadastrada')
+    }
+
+    // Verifica se a subcategoria existe
+    const subcategoryExists = await this.subcategoriesRepository.findById(
+      subcategoryId,
+    )
+    if (!subcategoryExists) {
+      throw new Error('não possui subcategoria cadastrada')
+    }
+
+    // Cria o produto
     const product = await this.productsRepository.create({
-      // id,
       name,
       description,
       price,
       quantity,
       image,
-      status,
       cashbackPercentage,
-      store_id,
-      subcategory_id,
+      status,
+      store_id: storeId,
+      subcategory_id: subcategoryId,
+      created_at: new Date(),
     })
-    return {
-      product,
-    }
+
+    console.log('productos', product)
+    return { product }
   }
 }
