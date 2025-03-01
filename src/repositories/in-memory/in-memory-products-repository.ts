@@ -69,6 +69,22 @@ export class InMemoryProductsRepository implements ProductsRepository {
     return product
   }
 
+  async findByStoreId(store_id: string) {
+    const product = this.items.find((item) => item.id === store_id)
+    if (!product) {
+      return null
+    }
+    return product
+  }
+
+  async findBySubcategoryId(subcategory_id: string) {
+    const product = this.items.find((item) => item.id === subcategory_id)
+    if (!product) {
+      return null
+    }
+    return product
+  }
+
   async searchMany(query: string, page: number) {
     return this.items
       .filter((item) => item.name.includes(query))
@@ -82,7 +98,7 @@ export class InMemoryProductsRepository implements ProductsRepository {
       description: data.description || null,
       price: data.price || 0,
       quantity: data.quantity || 0,
-      status: data.status,
+      status: data.status || false,
       image: data.image || null,
       cashbackPercentage: data.cashbackPercentage || 0, // Define um valor padrão caso não seja informado.
       store_id: data.store_id,

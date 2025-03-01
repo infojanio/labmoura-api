@@ -8,6 +8,7 @@ export class PrismaStoresRepository implements StoresRepository {
         id,
       },
     })
+    console.log('Resultado da busca manual:', store)
     return store
   }
   //busca lojas próximas até 15 km

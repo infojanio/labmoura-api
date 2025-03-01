@@ -4,7 +4,7 @@ import { ProductsRepository } from '../products-repository'
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 export class PrismaProductsRepository implements ProductsRepository {
-  async create(data: Prisma.ProductUncheckedCreateInput): Promise<Product> {
+  async create(data: Prisma.ProductUncheckedCreateInput) {
     const product = await prisma.product.create({
       data,
     })
@@ -15,6 +15,24 @@ export class PrismaProductsRepository implements ProductsRepository {
     const product = await prisma.product.findUnique({
       where: {
         id,
+      },
+    })
+    return product
+  }
+
+  async findByStoreId(store_id: string): Promise<Product | null> {
+    const product = await prisma.product.findFirst({
+      where: {
+        store_id,
+      },
+    })
+    return product
+  }
+
+  async findBySubcategoryId(subcategory_id: string): Promise<Product | null> {
+    const product = await prisma.product.findFirst({
+      where: {
+        subcategory_id,
       },
     })
     return product

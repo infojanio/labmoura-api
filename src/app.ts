@@ -2,13 +2,13 @@ import fastify from 'fastify'
 import fastifyJwt from '@fastify/jwt'
 import fastifyCors from '@fastify/cors'
 import fastifyFormBody from '@fastify/formbody'
+import { ZodError } from 'zod'
+import { env } from './.env'
 
 import { usersRoutes } from '@/http/controllers/users/routes'
 import { storesRoutes } from '@/http/controllers/stores/routes'
-import { ordersRoutes } from './http/controllers/orders/routes'
-import { ZodError } from 'zod'
-import { env } from './.env'
-import { productsRoutes } from './http/controllers/products/routes'
+import { ordersRoutes } from '@/http/controllers/orders/routes'
+import { productsRoutes } from '@/http/controllers/products/routes'
 
 export const app = fastify({
   // logger: true,

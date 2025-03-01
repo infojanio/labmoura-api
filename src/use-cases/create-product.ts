@@ -13,8 +13,8 @@ interface CreateProductUseCaseRequest {
   image?: string | null
   cashbackPercentage: number
   status: boolean
-  storeId: string
-  subcategoryId: string
+  store_id: string
+  subcategory_id: string
 }
 
 interface CreateProductUseCaseResponse {
@@ -36,25 +36,29 @@ export class CreateProductUseCase {
     image,
     cashbackPercentage,
     status,
-    storeId,
-    subcategoryId,
+    store_id,
+    subcategory_id,
   }: CreateProductUseCaseRequest): Promise<CreateProductUseCaseResponse> {
     // Verifica se a loja existe
 
-    const storeExists = await this.storesRepository.findById(storeId)
+    console.log('store_id recebido:', store_id)
+
+    const storeExists = await this.storesRepository.findById(store_id)
     if (!storeExists) {
-      throw new Error('não possui loja cadastrada')
+      console.log('storeExists:', storeExists)
+      throw new Error('A loja com esse ID não existe!')
     }
 
     // Verifica se a subcategoria existe
     const subcategoryExists = await this.subcategoriesRepository.findById(
-      subcategoryId,
+      subcategory_id,
     )
     if (!subcategoryExists) {
-      throw new Error('não possui subcategoria cadastrada')
+      throw new Error('A subcategoria com esse ID não existe!')
     }
 
     // Cria o produto
+
     const product = await this.productsRepository.create({
       name,
       description,
@@ -63,12 +67,12 @@ export class CreateProductUseCase {
       image,
       cashbackPercentage,
       status,
-      store_id: storeId,
-      subcategory_id: subcategoryId,
+      store_id,
+      subcategory_id,
       created_at: new Date(),
     })
 
-    console.log('productos', product)
+    console.log('products', product)
     return { product }
   }
 }
