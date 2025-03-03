@@ -29,7 +29,6 @@ export class InMemoryUsersRepository implements UsersRepository {
       phone: data.phone,
       role: data.role,
       avatar: data.avatar,
-      //   address_id: data.address_id,
       created_at: new Date(),
     }
     this.items.push(user)

@@ -3,7 +3,7 @@ import { makeGetUserCashbackBalanceUseCase } from '@/use-cases/factories/make-ge
 export async function balance(request: FastifyRequest, reply: FastifyReply) {
   const getUserCashbackBalanceUseCase = makeGetUserCashbackBalanceUseCase()
   const { balance } = await getUserCashbackBalanceUseCase.execute({
-    userId: request.user.sub,
+    user_id: request.user.sub,
   })
   return reply.status(200).send({
     balance,

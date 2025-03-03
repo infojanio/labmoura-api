@@ -6,7 +6,7 @@ export interface OrdersRepository {
 
   createOrderItems(
     orderId: string,
-    items: { productId: string; quantity: number; subtotal: number }[],
+    items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void>
 
   findById(id: string): Promise<Order | null>

@@ -7,7 +7,7 @@ export interface ProductsRepository {
   create(data: Prisma.ProductUncheckedCreateInput): Promise<Product>
   searchMany(search: string, page: number): Promise<Product[]> //buscar por nome
   update(
-    productId: string,
+    product_id: string,
     data: Prisma.ProductUncheckedUpdateInput,
   ): Promise<Product>
   delete(where: Prisma.ProductWhereUniqueInput): Promise<Product>

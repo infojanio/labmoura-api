@@ -30,7 +30,6 @@ describe('Create Product (e2e)', () => {
         id: 'f6d6a0a6-2f1c-486f-88ff-740469735340',
         name: 'categoria-01',
         image: null,
-
         created_at: new Date(),
       },
     })

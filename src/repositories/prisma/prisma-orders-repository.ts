@@ -30,28 +30,23 @@ export class PrismaOrdersRepository implements OrdersRepository {
     })
   }
 
-  async create(data: Prisma.OrderUncheckedCreateInput): Promise<Order> {
-    const userExists = await prisma.user.findUnique({
-      where: { id: data.user_id },
+  async create(data: Prisma.OrderUncheckedCreateInput) {
+    const order = await prisma.order.create({
+      data,
     })
-
-    if (!userExists) {
-      throw new Error('Usuário não encontrado.')
-    }
-
-    return await prisma.order.create({ data })
+    return order
   }
 
   async createOrderItems(
     orderId: string,
-    items: { productId: string; quantity: number; subtotal: number }[],
+    items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void> {
     if (items.length === 0) return
 
     await prisma.orderItem.createMany({
       data: items.map((item) => ({
         order_id: orderId,
-        product_id: item.productId,
+        product_id: item.product_id,
         quantity: item.quantity,
         subtotal: item.subtotal,
       })),

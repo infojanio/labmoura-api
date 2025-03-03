@@ -8,6 +8,7 @@ export class PrismaProductsRepository implements ProductsRepository {
     const product = await prisma.product.create({
       data,
     })
+    console.log('📦 Dados recebidos para criar produto:', data) // 🛠️ Log antes de criar
     return product
   }
 
@@ -52,12 +53,12 @@ export class PrismaProductsRepository implements ProductsRepository {
   }
 
   async update(
-    productId: string,
+    product_id: string,
     data: Prisma.ProductUncheckedUpdateInput,
   ): Promise<Product> {
     try {
       return await prisma.product.update({
-        where: { id: productId },
+        where: { id: product_id },
         data,
       })
     } catch (error) {

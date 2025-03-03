@@ -42,7 +42,6 @@ export class CreateProductUseCase {
     // Verifica se a loja existe
 
     console.log('store_id recebido:', store_id)
-
     const storeExists = await this.storesRepository.findById(store_id)
     if (!storeExists) {
       console.log('storeExists:', storeExists)

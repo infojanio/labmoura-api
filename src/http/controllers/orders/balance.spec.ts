@@ -19,7 +19,7 @@ describe('Balance Calculation Use Case', () => {
     sut = new OrderUseCase(
       ordersRepository,
       storesRepository,
-      //  orderItemsRepository,
+      orderItemsRepository,
     )
   })
 
@@ -32,8 +32,8 @@ describe('Balance Calculation Use Case', () => {
     })
 
     const { order: order1 } = await sut.execute({
-      userId: 'user-01',
-      storeId: store.id,
+      user_id: 'user-01',
+      store_id: store.id,
       userLatitude: -23.55052,
       userLongitude: -46.633308,
       totalAmount: 80,
@@ -41,21 +41,21 @@ describe('Balance Calculation Use Case', () => {
       created_at: new Date(),
       status: OrderStatus.VALIDATED,
       items: [
-        { productId: 'product-01', quantity: 1, subtotal: 50 },
-        { productId: 'product-02', quantity: 1, subtotal: 30 },
+        { product_id: 'product-01', quantity: 1, subtotal: 50 },
+        { product_id: 'product-02', quantity: 1, subtotal: 30 },
       ],
     })
 
     const { order: order2 } = await sut.execute({
-      userId: 'user-01',
-      storeId: store.id,
+      user_id: 'user-01',
+      store_id: store.id,
       userLatitude: -23.55052,
       userLongitude: -46.633308,
       totalAmount: 120,
       validated_at: new Date(),
       created_at: new Date(),
       status: OrderStatus.VALIDATED,
-      items: [{ productId: 'product-03', quantity: 2, subtotal: 60 }],
+      items: [{ product_id: 'product-03', quantity: 2, subtotal: 60 }],
     })
 
     const balance = await ordersRepository.balanceByUserId('user-01')

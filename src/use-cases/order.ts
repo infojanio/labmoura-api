@@ -6,16 +6,18 @@ import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coor
 import { MaxDistanceError } from './errors/max-distance-error'
 import { MaxNumberOfOrdersError } from './errors/max-number-of-orders-error'
 import { OrderItemsRepository } from '@/repositories/prisma/prisma-order-items-repository'
+import { UsersRepository } from '@/repositories/users-repository'
+import { ProductsRepository } from '@/repositories/products-repository'
 
 interface OrderItem {
-  productId: string
+  product_id: string
   quantity: number
   subtotal: number
 }
 
 interface OrderUseCaseRequest {
-  userId: string
-  storeId: string
+  user_id: string
+  store_id: string
   totalAmount?: number
   created_at?: Date
   validated_at?: Date | null
@@ -33,13 +35,15 @@ interface OrderUseCaseResponse {
 export class OrderUseCase {
   constructor(
     private ordersRepository: OrdersRepository,
+    private productsRepository: ProductsRepository,
     private orderItemsRepository: OrderItemsRepository, // Novo repositório
     private storesRepository: StoresRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async execute({
-    userId,
-    storeId,
+    user_id,
+    store_id,
     userLatitude,
     userLongitude,
     created_at = new Date(),
@@ -47,15 +51,26 @@ export class OrderUseCase {
     status,
     items,
   }: OrderUseCaseRequest): Promise<OrderUseCaseResponse> {
-    const store = await this.storesRepository.findById(storeId)
+    console.log('user_id recebido:', user_id)
+    const userExists = await this.usersRepository.findById(user_id)
+    if (!userExists) {
+      console.log('userExists:', userExists)
+      throw new Error('A usuário com esse ID não existe!')
+    }
 
-    if (!store) {
-      throw new Error('Loja não encontrada.')
+    console.log('store_id recebido:', store_id)
+    const storeExists = await this.storesRepository.findById(store_id)
+    if (!storeExists) {
+      console.log('storeExists:', storeExists)
+      throw new Error('A loja com esse ID não existe!')
     }
 
     const distance = getDistanceBetweenCoordinates(
       { latitude: userLatitude, longitude: userLongitude },
-      { latitude: Number(store.latitude), longitude: Number(store.longitude) },
+      {
+        latitude: Number(storeExists.latitude),
+        longitude: Number(storeExists.longitude),
+      },
     )
 
     const MAX_DISTANCE_IN_KILOMETERS = 40.0
@@ -64,7 +79,7 @@ export class OrderUseCase {
     }
 
     const hasRecentOrder = await this.ordersRepository.findByUserIdLastHour(
-      userId,
+      user_id,
       created_at || new Date(),
     )
 
@@ -77,8 +92,8 @@ export class OrderUseCase {
 
     // Criar o pedido sem os itens
     const order = await this.ordersRepository.create({
-      user_id: userId,
-      store_id: storeId,
+      user_id,
+      store_id,
       totalAmount: totalAmount, // Corrigindo o nome do campo
       validated_at, // Já é `null` por padrão
       status,
@@ -90,7 +105,7 @@ export class OrderUseCase {
       order.id,
       items.map((item) => ({
         order_id: order.id,
-        product_id: item.productId,
+        product_id: item.product_id,
         quantity: item.quantity,
         subtotal: item.subtotal,
       })),

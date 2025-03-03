@@ -7,22 +7,32 @@ import { InMemoryOrderItemsRepository } from '@/repositories/in-memory/in-memory
 import { OrderUseCase } from '@/use-cases/order'
 import { MaxNumberOfOrdersError } from '@/use-cases/errors/max-number-of-orders-error'
 import { MaxDistanceError } from '@/use-cases/errors/max-distance-error'
-import dayjs from 'dayjs'
+
+import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
+import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'
+import { PrismaProductsRepository } from '@/repositories/prisma/prisma-products-repository'
 
 let ordersRepository: InMemoryOrdersRepository
+let productsRepository: InMemoryProductsRepository
+
 let orderItemsRepository: InMemoryOrderItemsRepository
+let usersRepository: InMemoryUsersRepository
 let storesRepository: InMemoryStoresRepository
 let sut: OrderUseCase
 
 describe('Order Use Case', () => {
   beforeEach(async () => {
     ordersRepository = new InMemoryOrdersRepository()
-    storesRepository = new InMemoryStoresRepository()
+    productsRepository = new InMemoryProductsRepository()
     orderItemsRepository = new InMemoryOrderItemsRepository()
+    usersRepository = new InMemoryUsersRepository()
+    storesRepository = new InMemoryStoresRepository()
     sut = new OrderUseCase(
       ordersRepository,
+      productsRepository,
       orderItemsRepository,
       storesRepository,
+      usersRepository,
     )
 
     await storesRepository.create({
@@ -32,6 +42,18 @@ describe('Order Use Case', () => {
       longitude: new Decimal(-12.9332477),
       slug: null,
       created_at: new Date(),
+    })
+
+    await PrismaProductsRepository.create({
+      name: 'Tênis',
+      description: 'Nike, n.40',
+      price: 220,
+      quantity: 10,
+      image: 'nike.png',
+      status: false,
+      cashbackPercentage: 30,
+      store_id: 'f6d6a0a6-2f1c-486f-88ff-740469735337',
+      subcategory_id: 'f6d6a0a6-2f1c-486f-88ff-740469735338',
     })
 
     vi.useFakeTimers()
@@ -45,8 +67,8 @@ describe('Order Use Case', () => {
     vi.setSystemTime(new Date(2022, 0, 20, 8, 0, 0))
 
     const { order } = await sut.execute({
-      storeId: 'loja-01',
-      userId: 'user-01',
+      store_id: 'loja-01',
+      user_id: 'user-01',
       userLatitude: -46.9355272,
       userLongitude: -12.9332477,
       status: 'VALIDATED',
@@ -54,8 +76,8 @@ describe('Order Use Case', () => {
       validated_at: null,
       created_at: new Date(),
       items: [
-        { productId: 'prod-01', quantity: 2, subtotal: 100 },
-        { productId: 'prod-02', quantity: 1, subtotal: 100 },
+        { product_id: 'prod-01', quantity: 2, subtotal: 100 },
+        { product_id: 'prod-02', quantity: 1, subtotal: 100 },
       ],
     })
 
@@ -66,21 +88,21 @@ describe('Order Use Case', () => {
     vi.setSystemTime(new Date(2022, 0, 21, 9, 0, 0))
 
     await sut.execute({
-      storeId: 'loja-01',
-      userId: 'user-01',
+      store_id: 'loja-01',
+      user_id: 'user-01',
       userLatitude: -46.9355272,
       userLongitude: -12.9332477,
       status: 'VALIDATED',
       totalAmount: 0,
       validated_at: null,
       created_at: new Date(),
-      items: [{ productId: 'prod-01', quantity: 1, subtotal: 200 }],
+      items: [{ product_id: 'prod-01', quantity: 1, subtotal: 200 }],
     })
 
     await expect(() =>
       sut.execute({
-        storeId: 'loja-01',
-        userId: 'user-01',
+        store_id: 'loja-01',
+        user_id: 'user-01',
         userLatitude: -46.9355272,
         userLongitude: -12.9332477,
         status: 'VALIDATED',
@@ -104,15 +126,15 @@ describe('Order Use Case', () => {
 
     await expect(() =>
       sut.execute({
-        storeId: 'loja-02',
-        userId: 'user-01',
+        store_id: 'loja-02',
+        user_id: 'user-01',
         userLatitude: -23.0301369,
         userLongitude: -46.6333831,
         status: 'VALIDATED',
         totalAmount: 0,
         validated_at: null,
         created_at: new Date(),
-        items: [{ productId: 'prod-01', quantity: 1, subtotal: 200 }],
+        items: [{ product_id: 'prod-01', quantity: 1, subtotal: 200 }],
       }),
     ).rejects.toBeInstanceOf(MaxDistanceError)
   })

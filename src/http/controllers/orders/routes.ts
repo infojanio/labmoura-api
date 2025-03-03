@@ -10,7 +10,7 @@ export async function ordersRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
   app.get('/orders/history', history)
   //app.get('/orders/balance', balance)
-  app.post('/stores/:storeId/orders', create)
+  app.post('/orders', create)
   //app.post('/stores/:storeId/orders', { onRequest: [verifyJWT] }, create)
 
   app.patch(
