@@ -59,9 +59,11 @@ export class OrderUseCase {
     }
 
     console.log('store_id recebido:', store_id)
+
     const storeExists = await this.storesRepository.findById(store_id)
     if (!storeExists) {
       console.log('storeExists:', storeExists)
+
       throw new Error('A loja com esse ID não existe!')
     }
 

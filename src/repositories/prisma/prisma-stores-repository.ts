@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { Store, Prisma } from '@prisma/client'
 import { FindManyNearbyParams, StoresRepository } from '../stores-repository'
 export class PrismaStoresRepository implements StoresRepository {
-  async findById(id: string) {
+  async findById(id: string): Promise<Store | null> {
     const store = await prisma.store.findUnique({
       where: {
         id,

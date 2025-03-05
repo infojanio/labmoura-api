@@ -10,7 +10,7 @@ describe('Create Store Use Case', () => {
   })
   it('Deve ser possível cadastrar uma loja.', async () => {
     const { store } = await sut.execute({
-      name: 'loja-01',
+      name: '6c9e20cc-010b-48c9-a71d-219d12427910',
       slug: null,
       latitude: -46.9355272,
       longitude: -12.9332477,

@@ -15,8 +15,8 @@ describe('Validate Order Use Case', () => {
   })
   it('Deve ser possível validar o pedido.', async () => {
     const createdOrder = await ordersRepository.create({
-      store_id: 'gym-01',
-      user_id: 'user-01',
+      store_id: '6c9e20cc-010b-48c9-a71d-219d12427910',
+      user_id: '6c9e20cc-010b-48c9-a71d-219d12427912',
       totalAmount: 200,
     })
     const { order } = await sut.execute({

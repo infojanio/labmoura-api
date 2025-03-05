@@ -38,14 +38,14 @@ export class PrismaOrdersRepository implements OrdersRepository {
   }
 
   async createOrderItems(
-    orderId: string,
+    order_id: string,
     items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void> {
     if (items.length === 0) return
 
     await prisma.orderItem.createMany({
       data: items.map((item) => ({
-        order_id: orderId,
+        order_id: order_id,
         product_id: item.product_id,
         quantity: item.quantity,
         subtotal: item.subtotal,

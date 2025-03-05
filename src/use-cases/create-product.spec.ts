@@ -20,6 +20,7 @@ describe('Create Product Use Case', () => {
   })
   it('Deve ser possível cadastrar um produto.', async () => {
     const { product } = await sut.execute({
+      id: '6c9e20cc-010b-48c9-a71d-219d12427913',
       name: 'Tênis',
       description: 'Nike, n.40',
       price: 220,

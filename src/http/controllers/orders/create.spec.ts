@@ -12,7 +12,6 @@ import { prisma } from '@/lib/prisma'
 import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
 
 let orderItemsRepository: InMemoryOrderItemsRepository
-
 let storesRepository: InMemoryStoresRepository
 let sut: OrderUseCase
 

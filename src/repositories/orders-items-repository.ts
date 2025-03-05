@@ -1,6 +1,7 @@
 import { OrderItem, Prisma } from '@prisma/client'
 
 export interface OrderItemCreateInput {
+  id: string
   order_id: string
   product_id: string
   quantity: number

@@ -5,7 +5,7 @@ export interface OrdersRepository {
   create(data: Prisma.OrderUncheckedCreateInput): Promise<Order>
 
   createOrderItems(
-    orderId: string,
+    order_id: string,
     items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void>
 

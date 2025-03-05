@@ -6,6 +6,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { error } from 'console'
 
 interface CreateProductUseCaseRequest {
+  id: string
   name: string
   description?: string | null
   price: number
@@ -29,6 +30,7 @@ export class CreateProductUseCase {
   ) {}
 
   async execute({
+    id,
     name,
     description,
     price,
@@ -59,6 +61,7 @@ export class CreateProductUseCase {
     // Cria o produto
 
     const product = await this.productsRepository.create({
+      id,
       name,
       description,
       price,

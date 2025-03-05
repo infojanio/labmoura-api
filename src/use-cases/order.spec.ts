@@ -45,6 +45,7 @@ describe('Order Use Case', () => {
     })
 
     await PrismaProductsRepository.create({
+      id: 'f6d6a0a6-2f1c-486f-88ff-740469735335',
       name: 'Tênis',
       description: 'Nike, n.40',
       price: 220,
@@ -109,7 +110,7 @@ describe('Order Use Case', () => {
         totalAmount: 0,
         validated_at: null,
         created_at: new Date(),
-        items: [{ productId: 'prod-02', quantity: 1, subtotal: 200 }],
+        items: [{ product_id: 'prod-02', quantity: 1, subtotal: 200 }],
       }),
     ).rejects.toBeInstanceOf(MaxNumberOfOrdersError)
   })

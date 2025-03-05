@@ -18,7 +18,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
 
   async createOrderItems(
     orderId: string,
-    items: { productId: string; quantity: number; subtotal: number }[],
+    items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void> {
     const orderExists = this.orders.find((order) => order.id === orderId)
 
@@ -30,7 +30,7 @@ export class InMemoryOrdersRepository implements OrdersRepository {
       this.orderItems.push({
         id: randomUUID(),
         order_id: orderId,
-        product_id: item.productId,
+        product_id: item.product_id,
         quantity: item.quantity,
         subtotal: item.subtotal,
       })

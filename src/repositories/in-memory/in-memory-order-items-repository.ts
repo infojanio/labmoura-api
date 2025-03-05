@@ -3,20 +3,20 @@ import { Prisma, OrderItem } from '@prisma/client'
 
 export interface OrderItemsRepository {
   create(
-    orderId: string,
+    order_id: string,
     items: Prisma.OrderItemUncheckedCreateInput[],
   ): Promise<void>
-  findByOrderId(orderId: string): Promise<OrderItem[]>
+  findByOrderId(order_id: string): Promise<OrderItem[]>
 }
 
 export class InMemoryOrderItemsRepository implements OrderItemsRepository {
   async create(
-    orderId: string,
+    order_id: string,
     items: Prisma.OrderItemUncheckedCreateInput[],
   ): Promise<void> {
     await prisma.orderItem.createMany({
       data: items.map((item) => ({
-        order_id: orderId,
+        order_id: order_id,
         product_id: item.product_id,
         quantity: item.quantity,
         subtotal: item.subtotal,
@@ -24,9 +24,9 @@ export class InMemoryOrderItemsRepository implements OrderItemsRepository {
     })
   }
 
-  async findByOrderId(orderId: string): Promise<OrderItem[]> {
+  async findByOrderId(order_id: string): Promise<OrderItem[]> {
     return prisma.orderItem.findMany({
-      where: { order_id: orderId },
+      where: { order_id: order_id },
     })
   }
 }
