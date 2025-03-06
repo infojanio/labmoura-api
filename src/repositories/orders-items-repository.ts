@@ -11,4 +11,5 @@ export interface OrderItemCreateInput {
 export interface OrderItemsRepository {
   create(data: Prisma.OrderItemCreateInput): Promise<OrderItem>
   findByProductId(product_id: string): Promise<OrderItem[]>
+  createMany(orderItems: Prisma.OrderItemCreateManyInput): Promise<OrderItem[]>
 }

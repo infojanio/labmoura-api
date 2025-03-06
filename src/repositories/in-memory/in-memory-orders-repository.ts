@@ -1,3 +1,4 @@
+import { prisma } from '@/lib/prisma'
 import { OrdersRepository } from '@/repositories/orders-repository'
 import { Prisma, Order, Cashback } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
@@ -43,76 +44,67 @@ export class InMemoryOrdersRepository implements OrdersRepository {
       ...data,
     }
 
-    this.items.push(newOrder)
+    this.orders.push(newOrder)
     return newOrder
   }
 
   async balanceByUserId(userId: string): Promise<number> {
-    const userCashbacks = this.cashbacks.filter((cashback) => {
-      const relatedOrder = this.orders.find(
-        (order) => order.id === cashback.order_id,
-      )
-
-      // Considera apenas pedidos validados
-      return cashback.user_id === userId && relatedOrder?.validated_at !== null
+    const validatedCashbacks = await prisma.cashback.findMany({
+      where: {
+        user_id: userId,
+        order: { validated_at: { not: null } }, // Verifica pedidos validados
+      },
+      select: { amount: true, order_id: true },
     })
 
-    const balance = userCashbacks.reduce(
-      (acc, cashback) => acc + cashback.amount.toNumber(),
-      0,
+    console.log('Cashbacks encontrados:', validatedCashbacks)
+
+    if (validatedCashbacks.length === 0) {
+      console.log('Nenhum cashback encontrado para o usuário:', userId)
+      return 0
+    }
+
+    const balance = validatedCashbacks.reduce(
+      (acc, cashback) => acc.plus(cashback.amount),
+      new Decimal(0),
     )
 
-    return balance
+    console.log('Saldo calculado:', balance.toNumber())
+    return balance.toNumber()
   }
 
-  async findById(id: string) {
-    const order = this.items.find((item) => item.id === id)
-    if (!order) {
-      return null
-    }
-    return order
+  async findById(id: string): Promise<Order | null> {
+    return this.orders.find((order) => order.id === id) || null
   }
 
-  async save(order: Order) {
-    const orderIndex = this.items.findIndex((item) => item.id === order.id)
+  async save(order: Order): Promise<Order> {
+    const orderIndex = this.orders.findIndex((o) => o.id === order.id)
     if (orderIndex >= 0) {
-      this.items[orderIndex] = order
+      this.orders[orderIndex] = order
     }
     return order
   }
 
-  public items: Order[] = []
-
-  //encontra o pedido pelo id do usuário por página
-  async findManyByUserId(userId: string, page: number) {
-    return this.items
-      .filter((item) => item.user_id === userId)
+  async findManyByUserId(userId: string, page: number): Promise<Order[]> {
+    return this.orders
+      .filter((order) => order.user_id === userId)
       .slice((page - 1) * 20, page * 20)
   }
 
-  //encontra pedido feito no início do dia e no fim do dia
-  async findByUserIdOnDate(userId: string, date: Date) {
-    // Define o intervalo de uma hora
+  async findByUserIdOnDate(userId: string, date: Date): Promise<Order | null> {
     const startOfTheDate = dayjs(date).startOf('date')
     const endOfTheDate = dayjs(date).endOf('date')
 
-    // Verifica se existe algum pedido dentro do intervalo de uma hora
-    const orderOnSameDate = this.items.find((order) => {
-      const orderDate = dayjs(order.created_at) // Data da criação do pedido
-
-      // Valida se a data está no intervalo de uma hora
-      const isOnSameDate =
-        orderDate.isAfter(startOfTheDate) && orderDate.isBefore(endOfTheDate)
-
-      return order.user_id === userId && isOnSameDate
-    })
-
-    // Retorna o pedido encontrado ou null
-    if (!orderOnSameDate) {
-      return null
-    }
-
-    return orderOnSameDate
+    return (
+      this.orders.find((order) => {
+        const orderDate = dayjs(order.created_at)
+        return (
+          order.user_id === userId &&
+          orderDate.isAfter(startOfTheDate) &&
+          orderDate.isBefore(endOfTheDate)
+        )
+      }) || null
+    )
   }
 
   async findByUserIdLastHour(
@@ -122,31 +114,26 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     const oneHourAgo = dayjs(date).subtract(1, 'hour')
 
     return (
-      this.items.find((order) => {
+      this.orders.find((order) => {
         const orderCreatedAt = dayjs(order.created_at)
-
         return order.user_id === userId && orderCreatedAt.isAfter(oneHourAgo)
       }) || null
     )
   }
 
-  //encontra pedido feito no início da hora e no fim daquela hora
-  async findByUserIdOnHour(userId: string, date: Date) {
-    // Define o intervalo de uma hora
+  async findByUserIdOnHour(userId: string, date: Date): Promise<Order | null> {
     const startOfTheHour = dayjs(date).startOf('hour')
     const endOfTheHour = dayjs(date).endOf('hour')
 
-    // Verifica se existe um pedido do usuário dentro do intervalo de uma hora
-    const orderOnSameHour = this.items.find((order) => {
-      const orderCreatedAt = dayjs(order.created_at)
-
-      return (
-        order.user_id === userId &&
-        orderCreatedAt.isAfter(startOfTheHour) &&
-        orderCreatedAt.isBefore(endOfTheHour)
-      )
-    })
-
-    return orderOnSameHour || null
+    return (
+      this.orders.find((order) => {
+        const orderCreatedAt = dayjs(order.created_at)
+        return (
+          order.user_id === userId &&
+          orderCreatedAt.isAfter(startOfTheHour) &&
+          orderCreatedAt.isBefore(endOfTheHour)
+        )
+      }) || null
+    )
   }
 }

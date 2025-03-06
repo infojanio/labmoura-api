@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma, OrderItem } from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
+import { randomUUID } from 'crypto'
 
 export interface OrderItemsRepository {
   create(
@@ -22,6 +24,30 @@ export class InMemoryOrderItemsRepository implements OrderItemsRepository {
         subtotal: item.subtotal,
       })),
     })
+  }
+
+  public items: OrderItem[] = []
+
+  async createMany(
+    orderItems: {
+      order_id: string
+      product_id: string
+      quantity: Decimal
+      subtotal: Decimal
+    }[],
+  ) {
+    const newItems = orderItems.map((item) => ({
+      id: randomUUID(),
+      order_id: item.order_id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      subtotal: item.subtotal,
+      created_at: new Date(),
+    }))
+
+    this.items.push(...newItems)
+
+    return newItems
   }
 
   async findByOrderId(order_id: string): Promise<OrderItem[]> {

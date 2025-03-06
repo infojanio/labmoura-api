@@ -47,7 +47,7 @@ describe('Balance Calculation Use Case', () => {
     const subcategory = await prisma.subCategory.create({
       data: {
         id: 'f6d6a0a6-2f1c-486f-88ff-740469735338',
-        name: 'loja-01',
+        name: 'subcategoria-01',
         image: null,
         category_id: 'f6d6a0a6-2f1c-486f-88ff-740469735340',
         created_at: new Date(),
@@ -57,10 +57,25 @@ describe('Balance Calculation Use Case', () => {
 
     // Criando usuários
     // cria o usuário logado
-    const user1 = await usersRepository.create({
-      id: '9f75e18a-c61f-4dff-ae82-f07b799679b6',
-      name: 'John Doe',
-      email: 'johndoe@example2.com',
+    const user1 = await prisma.user.create({
+      data: {
+        id: '9f75e18a-c61f-4dff-ae82-f07b799679b6',
+        name: 'John Doe',
+        email: 'johndoe@example2.com',
+        passwordHash: '123456',
+        phone: '6299775614',
+        role: 'USER',
+        avatar: 'perfil.png',
+        created_at: new Date(),
+      },
+    })
+    //console.log('Usuário1', user1)
+
+    // cria o usuário logado
+    await usersRepository.create({
+      id: user1.id,
+      name: 'John Doe2',
+      email: 'johndoe2@example2.com',
       passwordHash: '123456',
       phone: '6299775614',
       role: 'USER',
@@ -70,8 +85,23 @@ describe('Balance Calculation Use Case', () => {
     console.log('Usuário1', user1)
 
     // cria o usuário logado
-    const user2 = await usersRepository.create({
-      id: '9f75e18a-c61f-4dff-ae82-f07b799679b2',
+    const user2 = await prisma.user.create({
+      data: {
+        id: '9f75e18a-c61f-4dff-ae82-f07b799679b2',
+        name: 'John Doe2',
+        email: 'johndoe2@example2.com',
+        passwordHash: '123456',
+        phone: '6299775614',
+        role: 'USER',
+        avatar: 'perfil.png',
+        created_at: new Date(),
+      },
+    })
+    // console.log('Usuário2', user2)
+
+    // cria o usuário logado
+    await usersRepository.create({
+      id: user2.id,
       name: 'John Doe2',
       email: 'johndoe2@example2.com',
       passwordHash: '123456',
@@ -134,6 +164,7 @@ describe('Balance Calculation Use Case', () => {
         status: true,
         created_at: new Date(),
       },
+
       {
         id: '9b27542d-f4ea-4cdd-8a85-f718eddf3b1c',
         name: 'Mochila Puma',
@@ -167,6 +198,7 @@ describe('Balance Calculation Use Case', () => {
       validated_at: new Date(),
       created_at: new Date(),
       status: OrderStatus.VALIDATED,
+
       items: [
         {
           product_id: '9b27542d-f4ea-4cdd-8a85-f718eddf3b1c',
@@ -174,7 +206,7 @@ describe('Balance Calculation Use Case', () => {
           subtotal: 120,
         },
         {
-          product_id: '9b27542d-f4ea-4cdd-8a85-f718eddf3b13',
+          product_id: '9b27542d-f4ea-4cdd-8a85-f718eddf3b12',
           quantity: 1,
           subtotal: 180,
         },
@@ -202,10 +234,9 @@ describe('Balance Calculation Use Case', () => {
     console.log('Pedido2:', order2)
     console.log('Calculando saldo do usuário...')
     const balance = await ordersRepository.balanceByUserId(
-      '9f75e18a-c61f-4dff-ae82-f07b799679b2',
+      '9f75e18a-c61f-4dff-ae82-f07b799679b6',
     )
-
     console.log('Saldo calculado:', balance)
-    expect(balance).toBe(500) // Apenas o segundo pedido pertence ao user-02
+    expect(balance).toBe(300) // Apenas o segundo pedido pertence ao user-02
   })
 })

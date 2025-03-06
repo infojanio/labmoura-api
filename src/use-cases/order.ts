@@ -8,6 +8,7 @@ import { MaxNumberOfOrdersError } from './errors/max-number-of-orders-error'
 import { OrderItemsRepository } from '@/repositories/prisma/prisma-order-items-repository'
 import { UsersRepository } from '@/repositories/users-repository'
 import { ProductsRepository } from '@/repositories/products-repository'
+import { prisma } from '@/lib/prisma'
 
 interface OrderItem {
   product_id: string
@@ -93,16 +94,23 @@ export class OrderUseCase {
     const totalAmount = items.reduce((acc, item) => acc + item.subtotal, 0)
 
     // Criar o pedido sem os itens
-    const order = await this.ordersRepository.create({
-      user_id,
-      store_id,
-      totalAmount: totalAmount, // Corrigindo o nome do campo
-      validated_at, // Já é `null` por padrão
-      status,
-      created_at,
+    const order = await prisma.order.create({
+      data: {
+        user_id,
+        store_id,
+        totalAmount: totalAmount, // Corrigindo o nome do campo
+        validated_at, // Já é `null` por padrão
+        status,
+        created_at: new Date(),
+      },
     })
+    console.log('pedido criado:', order)
 
-    // Criar os itens do pedido separadamente
+    if (!order) {
+      throw new Error('Falha ao criar pedido')
+    }
+
+    // Agora cria os itens, APÓS o pedido existir
     await this.orderItemsRepository.create(
       order.id,
       items.map((item) => ({
