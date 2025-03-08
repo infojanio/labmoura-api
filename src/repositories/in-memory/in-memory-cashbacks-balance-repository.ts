@@ -12,6 +12,19 @@ export class InMemoryCashbacksBalanceRepository implements CashbacksRepository {
     return this.items.filter((cashback) => cashback.user_id === user_id)
   }
 
+  async create(data: { user_id: string; order_id: string; amount: number }) {
+    const cashback: Cashback = {
+      id: `cashback-${this.items.length + 1}`, // Simula um ID único
+      user_id: data.user_id,
+      order_id: data.order_id,
+      amount: new Decimal(data.amount || 0),
+      credited_at: new Date(),
+    }
+
+    this.items.push(cashback)
+    return cashback
+  }
+
   //total recebido pelo cliente
   async totalCashbackByUserId(user_id: string): Promise<number> {
     const saldoReceive = this.items

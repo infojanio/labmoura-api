@@ -39,7 +39,7 @@ describe('Get User Cashback Balance Use Case', () => {
 
     const { balance } = await sut.execute({ user_id: 'user-1' })
     expect(balance).toBe(60) // 50 + 30 - 20 = 60
-    console.log('Saldo', balance)
+    console.log('Saldo:', balance.toString()) // Garantindo que seja impresso corretamente
   })
 
   it('Deve retornar saldo zero para um usuário sem cashback', async () => {

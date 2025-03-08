@@ -10,8 +10,11 @@ export class PrismaOrdersRepository implements OrdersRepository {
   }
 
   // Encontra pedido feito na última hora
-  async findByUserIdLastHour(userId: string): Promise<Order | null> {
-    const oneHourAgo = dayjs().subtract(1, 'hour').toDate()
+  async findByUserIdLastHour(
+    userId: string,
+    date: Date,
+  ): Promise<Order | boolean | null> {
+    const oneHourAgo = dayjs(date).subtract(1, 'hour').toDate()
 
     return await prisma.order.findFirst({
       where: {
@@ -55,11 +58,18 @@ export class PrismaOrdersRepository implements OrdersRepository {
 
   // Atualiza ou insere um pedido no banco
   async save(order: Order): Promise<Order> {
-    return await prisma.order.upsert({
+    const existingOrder = await prisma.order.findUnique({
       where: { id: order.id },
-      update: order,
-      create: order,
     })
+
+    if (existingOrder) {
+      return await prisma.order.update({
+        where: { id: order.id },
+        data: order,
+      })
+    } else {
+      return await prisma.order.create({ data: order })
+    }
   }
 
   // Retorna o saldo do usuário considerando apenas pedidos validados
@@ -73,7 +83,7 @@ export class PrismaOrdersRepository implements OrdersRepository {
     })
 
     return validatedCashbacks.reduce(
-      (acc, cashback) => acc + cashback.amount.toNumber(),
+      (acc, cashback) => acc + new Prisma.Decimal(cashback.amount).toNumber(),
       0,
     )
   }

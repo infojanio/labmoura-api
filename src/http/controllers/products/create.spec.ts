@@ -59,6 +59,7 @@ describe('Create Product (e2e)', () => {
       .post('/products') // 🚀 Nova URL sem storeId e subcategoryId na rota
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
+        id: 'f6d6a0a6-2f1c-486f-88ff-740469735333',
         store_id: 'f6d6a0a6-2f1c-486f-88ff-740469735339', // Agora enviados no corpo
         subcategory_id: 'f6d6a0a6-2f1c-486f-88ff-740469735338',
         name: 'Tênis nike',

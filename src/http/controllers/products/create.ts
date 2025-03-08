@@ -11,6 +11,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     */
 
   const createProductBodySchema = z.object({
+    id: z.string().uuid(),
     store_id: z.string().uuid(),
     subcategory_id: z.string().uuid(),
     name: z.string(),

@@ -9,6 +9,8 @@ import { OrderItemsRepository } from '@/repositories/prisma/prisma-order-items-r
 import { UsersRepository } from '@/repositories/users-repository'
 import { ProductsRepository } from '@/repositories/products-repository'
 import { prisma } from '@/lib/prisma'
+import { Decimal } from '@prisma/client/runtime/library'
+import { CashbacksRepository } from '@/repositories/cashbacks-repository'
 
 interface OrderItem {
   product_id: string
@@ -40,6 +42,7 @@ export class OrderUseCase {
     private orderItemsRepository: OrderItemsRepository, // Novo repositório
     private storesRepository: StoresRepository,
     private usersRepository: UsersRepository,
+    private cashbacksBalanceRepository: CashbacksRepository,
   ) {}
 
   async execute({
@@ -90,19 +93,38 @@ export class OrderUseCase {
       throw new MaxNumberOfOrdersError()
     }
 
-    // Calcular o total do pedido somando os subtotais dos itens
-    const totalAmount = items.reduce((acc, item) => acc + item.subtotal, 0)
+    // Buscar produtos para obter cashbackPercentage
+    const productIds = items.map((item) => item.product_id)
+    const products = await this.productsRepository.findByIds(productIds)
 
-    // Criar o pedido sem os itens
-    const order = await prisma.order.create({
-      data: {
-        user_id,
-        store_id,
-        totalAmount: totalAmount, // Corrigindo o nome do campo
-        validated_at, // Já é `null` por padrão
-        status,
-        created_at: new Date(),
-      },
+    let totalAmount = new Decimal(0)
+    let totalCashback = new Decimal(0)
+
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.product_id)
+      if (!product) {
+        throw new Error(`Produto ${item.product_id} não encontrado!`)
+      }
+
+      const itemPrice = new Decimal(product.price)
+      const itemQuantity = new Decimal(item.quantity)
+      const itemCashback = new Decimal(product.cashbackPercentage || 0)
+
+      totalAmount = totalAmount.plus(itemPrice.times(itemQuantity))
+      totalCashback = totalCashback.plus(
+        itemPrice.times(itemQuantity).times(itemCashback.div(100)),
+      )
+    }
+
+    // Criar o pedido
+    const order = await this.ordersRepository.create({
+      user_id,
+      store_id,
+      totalAmount: totalAmount.toNumber(),
+
+      validated_at,
+      status,
+      created_at,
     })
     console.log('pedido criado:', order)
 
@@ -117,9 +139,21 @@ export class OrderUseCase {
         order_id: order.id,
         product_id: item.product_id,
         quantity: item.quantity,
-        subtotal: item.subtotal,
+        subtotal: new Decimal(item.subtotal).toNumber(),
       })),
     )
+    // Salvar o cashback gerado na tabela Cashbacks
+    if (totalCashback.gt(0)) {
+      await prisma.cashback.create({
+        data: {
+          user_id,
+          order_id: order.id, // Relaciona ao pedido
+          amount: totalCashback.toNumber(), // Salva o cashback
+          //   created_at: new Date(),
+        },
+      })
+      console.log('Cashback registrado:', totalCashback.toNumber())
+    }
 
     return { order }
   }

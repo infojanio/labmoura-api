@@ -5,30 +5,32 @@ interface GetUserCashbackBalanceUseCaseRequest {
 }
 
 interface GetUserCashbackBalanceUseCaseResponse {
+  totalReceived: number
+  totalUsed: number
   balance: number
 }
 
 export class GetUserCashbackBalanceUseCase {
   constructor(private cashbacksRepository: CashbacksRepository) {}
 
-  async execute(
-    request: GetUserCashbackBalanceUseCaseRequest,
-  ): Promise<GetUserCashbackBalanceUseCaseResponse> {
-    const { user_id } = request
+  async execute({
+    user_id,
+  }: GetUserCashbackBalanceUseCaseRequest): Promise<
+    GetUserCashbackBalanceUseCaseResponse
+  > {
+    const totalCashback: number = (
+      await this.cashbacksRepository.totalCashbackByUserId(user_id)
+    ).toNumber()
+    const usedCashback: number = (
+      await this.cashbacksRepository.totalUsedCashbackByUserId(user_id)
+    ).toNumber()
 
-    // Soma dos cashbacks recebidos
-    const receivedCashback = await this.cashbacksRepository.totalCashbackByUserId(
-      user_id,
-    )
+    const balance = totalCashback - usedCashback
 
-    // Soma dos cashbacks usados
-    const usedCashback = await this.cashbacksRepository.totalUsedCashbackByUserId(
-      user_id,
-    )
-
-    // Calcula o saldo atual
-    const balance = receivedCashback - usedCashback
-
-    return { balance }
+    return {
+      totalReceived: totalCashback,
+      totalUsed: usedCashback,
+      balance,
+    }
   }
 }
