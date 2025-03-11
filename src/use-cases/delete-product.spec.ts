@@ -11,7 +11,7 @@ describe('Delete Product Use Case', () => {
     deleteProductUseCase = new DeleteProductUseCase(productsRepository)
   })
 
-  it('Deve ser possível deletar um produto marcando status como true.', async () => {
+  it('Deve ser possível deletar um produto marcando status como false.', async () => {
     // Arrange: Cria um produto inicial
     const product = await productsRepository.create({
       id: 'product-id-1',
@@ -20,7 +20,7 @@ describe('Delete Product Use Case', () => {
       price: 220,
       quantity: 10,
       image: 'nike.png',
-      status: false,
+      status: true,
       cashbackPercentage: 30,
       store_id: '1453sdf1555',
       subcategory_id: '122355113fd',
@@ -33,7 +33,7 @@ describe('Delete Product Use Case', () => {
     })
 
     // Assert: Verifica que o produto foi marcado como deletado
-    expect(deletedProduct.status).toBe(true)
+    expect(deletedProduct.status).toBe(false)
     expect(deletedProduct.id).toBe(product.id)
   })
 

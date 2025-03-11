@@ -1,6 +1,7 @@
 import { StoresRepository } from '@/repositories/stores-repository'
 import { Store } from '@prisma/client'
 interface CreateStoreUseCaseRequest {
+  id?: string
   name: string
   slug: string | null
   latitude: number
@@ -14,12 +15,14 @@ interface CreateStoreUseCaseResponse {
 export class CreateStoreUseCase {
   constructor(private storesRepository: StoresRepository) {}
   async execute({
+    id,
     name,
     slug,
     latitude,
     longitude,
   }: CreateStoreUseCaseRequest): Promise<CreateStoreUseCaseResponse> {
     const store = await this.storesRepository.create({
+      id,
       name,
       slug,
       latitude,

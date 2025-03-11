@@ -21,7 +21,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
   })
 
   const {
-    // id,
+    //id,
     name,
     email,
     password,
@@ -34,7 +34,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     const registerUseCase = makeRegisterUseCase()
 
     const user = await registerUseCase.execute({
-      // id,
+      //id,
       name,
       email,
       password,

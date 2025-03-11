@@ -38,14 +38,19 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     })
   }
 
-  async create(data: Omit<Order, 'id'>): Promise<Order> {
-    const newOrder: Order = {
-      id: randomUUID(),
-      ...data,
+  async create(data: Prisma.OrderUncheckedCreateInput): Promise<Order> {
+    const order: Order = {
+      id: data.id ?? randomUUID(),
+      user_id: data.user_id,
+      store_id: data.store_id,
+      totalAmount: data.totalAmount || new Prisma.Decimal(1),
+      status: data.status ?? 'VALIDATED', // Garante que o status padrão seja false
+      validated_at: data.validated_at || new Date(),
+      created_at: data.created_at ?? new Date(),
     }
 
-    this.orders.push(newOrder)
-    return newOrder
+    this.orders.push(order)
+    return order
   }
 
   async balanceByUserId(userId: string): Promise<number> {

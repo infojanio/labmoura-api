@@ -1,11 +1,12 @@
 import { SubCategoriesRepository } from '@/repositories/subcategories-repository'
 import { SubCategory, Prisma } from '@prisma/client'
 interface CreateSubCategoryUseCaseRequest {
+  id?: string
   name: string
   image: string | null
   category_id: string
-  products: string
   created_at: Date
+  //products: string
 }
 interface CreateSubCategoryUseCaseResponse {
   subcategory: SubCategory
@@ -13,20 +14,20 @@ interface CreateSubCategoryUseCaseResponse {
 export class CreateSubCategoryUseCase {
   constructor(private subcategoriesRepository: SubCategoriesRepository) {}
   async execute({
+    id,
     name,
     image,
     category_id,
-    products,
     created_at,
-  }: CreateSubCategoryUseCaseRequest): Promise<
-    CreateSubCategoryUseCaseResponse
-  > {
+  }: //products,
+  CreateSubCategoryUseCaseRequest): Promise<CreateSubCategoryUseCaseResponse> {
     const subcategory = await this.subcategoriesRepository.create({
+      id,
       name,
       image,
       category_id,
-      products,
       created_at,
+      //products,
     })
     return {
       subcategory,

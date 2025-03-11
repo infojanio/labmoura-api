@@ -12,9 +12,9 @@ describe('Create SubCategory Use Case', () => {
     const { subcategory } = await sut.execute({
       name: 'loja-01',
       image: null,
-      category_id: 'kdiikd2121313',
-      products: 'Roupas, Calçados',
+      category_id: 'category-01',
       created_at: new Date(),
+      // products: 'Roupas, Calçados',
     })
     expect(subcategory.id).toEqual(expect.any(String))
   })

@@ -21,8 +21,8 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
       id: data.id ?? randomUUID(),
       name: data.name,
       image: data.image || null,
-      subcategory: data.SubCategory,
       created_at: new Date(),
+      //subcategory: data.SubCategory,
     }
     this.items.push(category)
     return category

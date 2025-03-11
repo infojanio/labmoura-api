@@ -19,12 +19,13 @@ interface OrderItem {
 }
 
 interface OrderUseCaseRequest {
+  id?: string
   user_id: string
   store_id: string
   totalAmount?: number
   created_at?: Date
   validated_at?: Date | null
-  status: OrderStatus
+  status?: OrderStatus
   userLatitude: number
   userLongitude: number
   items: OrderItem[]
@@ -46,12 +47,13 @@ export class OrderUseCase {
   ) {}
 
   async execute({
+    id,
     user_id,
     store_id,
     userLatitude,
     userLongitude,
     created_at = new Date(),
-    validated_at = null,
+    validated_at = new Date(),
     status,
     items,
   }: OrderUseCaseRequest): Promise<OrderUseCaseResponse> {
@@ -118,13 +120,13 @@ export class OrderUseCase {
 
     // Criar o pedido
     const order = await this.ordersRepository.create({
+      id,
       user_id,
       store_id,
       totalAmount: totalAmount.toNumber(),
-
-      validated_at,
-      status,
-      created_at,
+      validated_at: null,
+      status: 'PENDING',
+      created_at: new Date(),
     })
     console.log('pedido criado:', order)
 

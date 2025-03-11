@@ -39,7 +39,7 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
     })
   }
 
-  async create(data: Prisma.CategoryCreateInput) {
+  async create(data: Prisma.CategoryUncheckedCreateInput) {
     const category = await prisma.category.create({
       data,
     })

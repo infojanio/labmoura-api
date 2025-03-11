@@ -6,7 +6,7 @@ import { ResourceNotFoundError } from './errors/resource-not-found-error'
 import { error } from 'console'
 
 interface CreateProductUseCaseRequest {
-  id: string
+  id?: string
   name: string
   description?: string | null
   price: number

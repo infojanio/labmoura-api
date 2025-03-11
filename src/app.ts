@@ -9,6 +9,8 @@ import { usersRoutes } from '@/http/controllers/users/routes'
 import { storesRoutes } from '@/http/controllers/stores/routes'
 import { ordersRoutes } from '@/http/controllers/orders/routes'
 import { productsRoutes } from '@/http/controllers/products/routes'
+import { subcategoriesRoutes } from '@/http/controllers/subcategories/routes'
+import { categoriesRoutes } from './http/controllers/categories/routes'
 
 export const app = fastify({
   // logger: true,
@@ -20,8 +22,10 @@ app.register(fastifyCors)
 
 app.register(usersRoutes)
 app.register(storesRoutes)
-app.register(ordersRoutes)
+app.register(categoriesRoutes)
+app.register(subcategoriesRoutes)
 app.register(productsRoutes)
+app.register(ordersRoutes)
 
 app.addHook('preHandler', async (request, reply) => {
   //console.log('REQUEST BODY:', request.body)

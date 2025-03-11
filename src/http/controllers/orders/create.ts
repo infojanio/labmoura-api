@@ -19,12 +19,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
       .number()
       .positive({ message: 'O total deve ser maior que zero' }),
 
-    validated_at: z
-      .preprocess(
-        (val) => (val ? new Date(val as string) : null),
-        z.union([z.date(), z.null()]),
-      )
-      .optional(),
+    validated_at: z.date().nullable(),
 
     status: z.enum(['PENDING', 'VALIDATED', 'EXPIRED']),
 
@@ -54,10 +49,10 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     const { order } = await orderUseCase.execute({
       userLatitude: validatedData.latitude,
       userLongitude: validatedData.longitude,
-      totalAmount: validatedData.totalAmount,
-      validated_at: validatedData.validated_at,
+      //totalAmount: validatedData.totalAmount,
+      validated_at: validatedData.validated_at || null,
       created_at: new Date(),
-      status: validatedData.status,
+      //status: validatedData.status,
       user_id: validatedData.user_id,
       store_id: validatedData.store_id,
       items: validatedData.items,

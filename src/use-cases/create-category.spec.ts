@@ -11,9 +11,9 @@ describe('Create Category Use Case', () => {
   it('Deve ser possível cadastrar uma categoria.', async () => {
     const { category } = await sut.execute({
       name: 'category-01',
-      image: null,
-      subcategory: 'iiss211212',
+      image: 'foto3.jpg',
       created_at: new Date(),
+      //    subcategory: 'iiss211212',
     })
     expect(category.id).toEqual(expect.any(String))
   })

@@ -1,6 +1,7 @@
 import { AddressesRepository } from '@/repositories/addresses-repository'
 import { Address, Prisma } from '@prisma/client'
 interface CreateAddressUseCaseRequest {
+  id?: string
   street: string
   city: string
   state: string
@@ -15,6 +16,7 @@ interface CreateAddressUseCaseResponse {
 export class CreateAddressUseCase {
   constructor(private addressesRepository: AddressesRepository) {}
   async execute({
+    id,
     street,
     city,
     state,
@@ -24,6 +26,7 @@ export class CreateAddressUseCase {
   }: // created_at,
   CreateAddressUseCaseRequest): Promise<CreateAddressUseCaseResponse> {
     const address = await this.addressesRepository.create({
+      id,
       street,
       city,
       state,

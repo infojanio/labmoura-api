@@ -1,4 +1,5 @@
 import { CashbacksRepository } from '@/repositories/cashbacks-repository'
+import { Decimal } from '@prisma/client/runtime/library'
 
 interface GetUserCashbackBalanceUseCaseRequest {
   user_id: string
@@ -18,12 +19,23 @@ export class GetUserCashbackBalanceUseCase {
   }: GetUserCashbackBalanceUseCaseRequest): Promise<
     GetUserCashbackBalanceUseCaseResponse
   > {
-    const totalCashback: number = (
-      await this.cashbacksRepository.totalCashbackByUserId(user_id)
-    ).toNumber()
-    const usedCashback: number = (
-      await this.cashbacksRepository.totalUsedCashbackByUserId(user_id)
-    ).toNumber()
+    //Antes de chamar .toNumber(), verifique se a variável é do tipo Decimal
+    const totalCashbackRaw = await this.cashbacksRepository.totalCashbackByUserId(
+      user_id,
+    )
+    const usedCashbackRaw = await this.cashbacksRepository.totalUsedCashbackByUserId(
+      user_id,
+    )
+
+    //Se for, converta para number; caso contrário, use o valor diretamente
+    const totalCashback =
+      totalCashbackRaw instanceof Decimal
+        ? totalCashbackRaw.toNumber()
+        : totalCashbackRaw
+    const usedCashback =
+      usedCashbackRaw instanceof Decimal
+        ? usedCashbackRaw.toNumber()
+        : usedCashbackRaw
 
     const balance = totalCashback - usedCashback
 
