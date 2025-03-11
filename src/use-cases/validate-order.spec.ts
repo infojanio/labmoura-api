@@ -17,13 +17,16 @@ describe('Validate Order Use Case', () => {
     const createdOrder = await ordersRepository.create({
       store_id: '6c9e20cc-010b-48c9-a71d-219d12427910',
       user_id: '6c9e20cc-010b-48c9-a71d-219d12427912',
+      validated_at: new Date(),
+      status: 'VALIDATED',
       totalAmount: 200,
+      created_at: new Date(),
     })
     const { order } = await sut.execute({
       orderId: createdOrder.id,
     })
     expect(order.validated_at).toEqual(expect.any(Date))
-    expect(ordersRepository.items[0].validated_at).toEqual(expect.any(Date))
+    expect(ordersRepository.orders[0].validated_at).toEqual(expect.any(Date))
   })
   it('Não deve ser possível validar um pedido inexistente.', async () => {
     await expect(() =>

@@ -15,13 +15,12 @@ describe('Register Use Case', () => {
 
   it('Deve ser possível cadastrar o usuário com sucesso.', async () => {
     const { user } = await sut.execute({
-      id: '254235fdffd245df',
+      id: '9f75e18a-c61f-4dff-ae82-f07b799679b6',
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
       phone: '6296695513',
       avatar: 'foto.jpg',
-
       role: 'USER',
       created_at: new Date(),
     })
@@ -31,7 +30,7 @@ describe('Register Use Case', () => {
 
   it('Deve criar o hash da senha no registro do usuário.', async () => {
     const { user } = await sut.execute({
-      id: '254235fdffd245df',
+      //id: '254235fdffd245df',
       name: 'John Doe',
       email: 'johndoe@example.com',
       password: '123456',
@@ -50,7 +49,7 @@ describe('Register Use Case', () => {
     const email = 'contato@iaki.com.br'
 
     await sut.execute({
-      id: '254235fdffd245df',
+      //id: '254235fdffd245df',
       name: 'John Doe',
       email,
       password: '123456',
@@ -63,7 +62,7 @@ describe('Register Use Case', () => {
     //sempre usar o await quando o retorno for .rejects.toBeInstaceOf
     await expect(() =>
       sut.execute({
-        id: '254235fdffd245df',
+        // id: '254235fdffd245df',
         name: 'John Doe',
         email,
         password: '123456',

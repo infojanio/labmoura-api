@@ -53,7 +53,7 @@ export class OrderUseCase {
     userLatitude,
     userLongitude,
     created_at = new Date(),
-    validated_at = new Date(),
+    validated_at,
     status,
     items,
   }: OrderUseCaseRequest): Promise<OrderUseCaseResponse> {
@@ -128,7 +128,7 @@ export class OrderUseCase {
       status: 'PENDING',
       created_at: new Date(),
     })
-    console.log('pedido criado:', order)
+    console.log('pedido salvo:', order)
 
     if (!order) {
       throw new Error('Falha ao criar pedido')

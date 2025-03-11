@@ -5,7 +5,6 @@ import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-ord
 import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-stores-repository'
 import { OrderUseCase } from '@/use-cases/order'
 import { MaxNumberOfOrdersError } from '@/use-cases/errors/max-number-of-orders-error'
-import { MaxDistanceError } from '@/use-cases/errors/max-distance-error'
 
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'
@@ -21,7 +20,7 @@ let productsRepository: InMemoryProductsRepository
 let orderItemsRepository: InMemoryOrderItemsRepository
 let usersRepository: InMemoryUsersRepository
 let storesRepository: InMemoryStoresRepository
-let cashbacksBalanceRepository: InMemoryCashbacksBalanceRepository // Novo repositório
+let cashbacksBalanceRepository: InMemoryCashbacksBalanceRepository
 let categoryRepository: InMemoryCategoriesRepository
 let subcategoryRepository: InMemorySubCategoriesRepository
 
@@ -34,7 +33,7 @@ describe('Order Use Case', () => {
     orderItemsRepository = new InMemoryOrderItemsRepository()
     usersRepository = new InMemoryUsersRepository()
     storesRepository = new InMemoryStoresRepository()
-    cashbacksBalanceRepository = new InMemoryCashbacksBalanceRepository() // Novo repositório
+    cashbacksBalanceRepository = new InMemoryCashbacksBalanceRepository()
 
     categoryRepository = new InMemoryCategoriesRepository()
     subcategoryRepository = new InMemorySubCategoriesRepository()
@@ -45,7 +44,7 @@ describe('Order Use Case', () => {
       orderItemsRepository,
       storesRepository,
       usersRepository,
-      cashbacksBalanceRepository, // Passamos o repositório de cashback
+      cashbacksBalanceRepository,
     )
 
     await usersRepository.create({
@@ -79,19 +78,19 @@ describe('Order Use Case', () => {
       id: 'subcategory-01',
       name: 'Roupas',
       image: null,
-      category_id: 'f6d6a0a6-2f1c-486f-88ff-740469735340',
+      category_id: 'category-01',
       created_at: new Date(),
     })
 
     await productsRepository.create({
       id: 'prod-01',
-      name: 'Tênis nike',
+      name: 'Tênis Nike',
       description: 'Masculino, n.40',
       price: 250,
       quantity: 10,
       image: 'foto.jpg',
-      store_id: 'f6d6a0a6-2f1c-486f-88ff-740469735339',
-      subcategory_id: 'f6d6a0a6-2f1c-486f-88ff-740469735338',
+      store_id: 'loja-01',
+      subcategory_id: 'subcategory-01',
       cashbackPercentage: 15,
       status: true,
       created_at: new Date(),
@@ -115,14 +114,15 @@ describe('Order Use Case', () => {
       userLongitude: -46.9355272,
       status: 'VALIDATED',
       totalAmount: 500,
-      validated_at: new Date(),
+      validated_at: null,
       created_at: new Date(),
       items: [{ product_id: 'prod-01', quantity: 2, subtotal: 250 * 2 }],
     })
-    console.log('PEDIDO', order)
-    expect(order.id).toEqual(expect.any(String))
+
+    expect(order.id).toEqual('order-01')
     expect(order.totalAmount).toBe(500)
 
+    // Cashback esperado: 15% de 500 = 75
     const totalCashback = await cashbacksBalanceRepository.totalCashbackByUserId(
       'user-01',
     )
@@ -140,7 +140,7 @@ describe('Order Use Case', () => {
       userLongitude: -46.9355272,
       status: 'VALIDATED',
       totalAmount: 250,
-      validated_at: new Date(),
+      validated_at: null,
       created_at: new Date(),
       items: [{ product_id: 'prod-01', quantity: 1, subtotal: 250 }],
     })
@@ -154,7 +154,7 @@ describe('Order Use Case', () => {
         userLongitude: -46.9355272,
         status: 'VALIDATED',
         totalAmount: 250,
-        validated_at: new Date(),
+        validated_at: null,
         created_at: new Date(),
         items: [{ product_id: 'prod-01', quantity: 1, subtotal: 250 }],
       }),
