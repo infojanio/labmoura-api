@@ -13,6 +13,8 @@ export class InMemoryCashbacksBalanceRepository implements CashbacksRepository {
   }
 
   async create(data: { user_id: string; order_id: string; amount: number }) {
+    console.log('Cashback criado:', data)
+
     const cashback: Cashback = {
       id: `cashback-${this.items.length + 1}`, // Simula um ID único
       user_id: data.user_id,
@@ -22,6 +24,7 @@ export class InMemoryCashbacksBalanceRepository implements CashbacksRepository {
     }
 
     this.items.push(cashback)
+    console.log('CASHBACK:', cashback)
     return cashback
   }
 

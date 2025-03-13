@@ -10,6 +10,7 @@ import { InMemoryOrderItemsRepository } from '@/repositories/in-memory/in-memory
 import { app } from '@/app'
 import { prisma } from '@/lib/prisma'
 import { createAndAuthenticateUser } from '@/utils/test/create-and-authenticate-user'
+import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-orders-repository'
 
 let orderItemsRepository: InMemoryOrderItemsRepository
 let storesRepository: InMemoryStoresRepository
@@ -18,7 +19,9 @@ let sut: OrderUseCase
 describe('Create Order Use Case', () => {
   beforeAll(async () => {
     storesRepository = new InMemoryStoresRepository()
-    orderItemsRepository = new InMemoryOrderItemsRepository()
+    orderItemsRepository = new InMemoryOrderItemsRepository(
+      new InMemoryOrdersRepository(),
+    )
 
     await app.ready()
 

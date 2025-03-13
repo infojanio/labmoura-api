@@ -144,6 +144,7 @@ export class OrderUseCase {
         subtotal: new Decimal(item.subtotal).toNumber(),
       })),
     )
+
     // Salvar o cashback gerado na tabela Cashbacks
     if (totalCashback.gt(0)) {
       await prisma.cashback.create({

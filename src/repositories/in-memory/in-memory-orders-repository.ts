@@ -1,4 +1,3 @@
-import { prisma } from '@/lib/prisma'
 import { OrdersRepository } from '@/repositories/orders-repository'
 import { Prisma, Order, Cashback } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
@@ -17,13 +16,32 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     subtotal: number
   }[] = []
 
+  async create(data: Prisma.OrderUncheckedCreateInput): Promise<Order> {
+    const order: Order = {
+      id: data.id ?? randomUUID(),
+      user_id: data.user_id,
+      store_id: data.store_id,
+      totalAmount: data.totalAmount || new Prisma.Decimal(1),
+      status: data.status ?? 'VALIDATED',
+      validated_at: data.validated_at || new Date(),
+      created_at: data.created_at ?? new Date(),
+    }
+
+    this.orders.push(order)
+
+    return order
+  }
+
   async createOrderItems(
     orderId: string,
     items: { product_id: string; quantity: number; subtotal: number }[],
   ): Promise<void> {
+    console.log('Pedidos armazenados:', this.orders)
+
     const orderExists = this.orders.find((order) => order.id === orderId)
 
     if (!orderExists) {
+      console.error(`Erro: Pedido com ID ${orderId} não encontrado.`)
       throw new Error('Pedido não encontrado.')
     }
 
@@ -38,28 +56,10 @@ export class InMemoryOrdersRepository implements OrdersRepository {
     })
   }
 
-  async create(data: Prisma.OrderUncheckedCreateInput): Promise<Order> {
-    const order: Order = {
-      id: data.id ?? randomUUID(),
-      user_id: data.user_id,
-      store_id: data.store_id,
-      totalAmount: data.totalAmount || new Prisma.Decimal(1),
-      status: data.status ?? 'VALIDATED', // Garante que o status padrão seja false
-      validated_at: data.validated_at || new Date(),
-      created_at: data.created_at ?? new Date(),
-    }
-
-    this.orders.push(order)
-    return order
-  }
-
   async balanceByUserId(userId: string): Promise<number> {
-    const validatedCashbacks = await prisma.cashback.findMany({
-      where: {
-        user_id: userId,
-        order: { validated_at: { not: null } }, // Verifica pedidos validados
-      },
-      select: { amount: true, order_id: true },
+    const validatedCashbacks = this.cashbacks.filter((cashback) => {
+      const order = this.orders.find((order) => order.id === cashback.order_id)
+      return order?.user_id === userId && order?.validated_at !== null
     })
 
     console.log('Cashbacks encontrados:', validatedCashbacks)

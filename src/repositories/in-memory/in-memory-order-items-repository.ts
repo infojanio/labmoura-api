@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { Prisma, OrderItem } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { randomUUID } from 'crypto'
+import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-orders-repository'
 
 export interface OrderItemsRepository {
   create(
@@ -12,30 +13,37 @@ export interface OrderItemsRepository {
 }
 
 export class InMemoryOrderItemsRepository implements OrderItemsRepository {
+  private ordersRepository: InMemoryOrdersRepository
+
+  constructor(ordersRepository: InMemoryOrdersRepository) {
+    this.ordersRepository = ordersRepository
+  }
+
   async create(
     order_id: string,
     items: Prisma.OrderItemUncheckedCreateInput[],
   ): Promise<void> {
-    await prisma.$transaction(async (tx) => {
-      // Verifica se o pedido já existe antes de adicionar os itens
-      const orderExists = await tx.order.findUnique({
-        where: { id: order_id },
-      })
+    // 🔍 Verificar se o pedido existe na memória antes de consultar no banco
+    const orderExists = this.ordersRepository.orders.find(
+      (order) => order.id === order_id,
+    )
 
-      if (!orderExists) {
-        throw new Error(`Pedido com ID ${order_id} não encontrado.`)
-      }
+    if (!orderExists) {
+      throw new Error(`Pedido com ID ${order_id} não encontrado.`)
+    }
 
-      // Cria os itens do pedido
-      await tx.orderItem.createMany({
-        data: items.map((item) => ({
-          order_id: order_id,
-          product_id: item.product_id,
-          quantity: item.quantity,
-          subtotal: item.subtotal,
-        })),
-      })
-    })
+    // ✅ Criar os itens diretamente na memória
+    const newItems = items.map((item) => ({
+      id: randomUUID(),
+      order_id: order_id,
+      product_id: item.product_id,
+      quantity: new Prisma.Decimal(item.quantity),
+      subtotal: new Prisma.Decimal(item.subtotal),
+      created_at: new Date(),
+    }))
+
+    this.items.push(...newItems)
+    console.log('items criados', newItems)
   }
 
   public items: OrderItem[] = []
@@ -48,36 +56,14 @@ export class InMemoryOrderItemsRepository implements OrderItemsRepository {
       subtotal: Decimal
     }[],
   ) {
-    // Verifica se o pedido existe antes de criar os itens
-    const orderIds = [...new Set(orderItems.map((item) => item.order_id))]
-
-    for (const order_id of orderIds) {
-      const orderExists = await prisma.order.findUnique({
-        where: { id: order_id },
-      })
-
-      if (!orderExists) {
-        throw new Error(`Pedido com ID ${order_id} não encontrado.`)
-      }
+    for (const item of orderItems) {
+      await this.create(item.order_id, [item])
     }
 
-    const newItems = orderItems.map((item) => ({
-      id: randomUUID(),
-      order_id: item.order_id,
-      product_id: item.product_id,
-      quantity: item.quantity,
-      subtotal: item.subtotal,
-      created_at: new Date(),
-    }))
-
-    this.items.push(...newItems)
-
-    return newItems
+    return this.items
   }
 
   async findByOrderId(order_id: string): Promise<OrderItem[]> {
-    return prisma.orderItem.findMany({
-      where: { order_id: order_id },
-    })
+    return this.items.filter((item) => item.order_id === order_id)
   }
 }
