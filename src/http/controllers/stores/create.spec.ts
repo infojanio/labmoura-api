@@ -20,6 +20,12 @@ describe('Create Store (e2e)', () => {
         slug: 'foto02.jpg',
         latitude: -27.2092052,
         longitude: -49.6401091,
+        address: {
+          city: 'Campos Belos',
+          state: 'Goiás',
+          postalCode: '73840-000',
+          street: 'Rua 5, qd. 6, lt. 1',
+        },
       })
     console.log(response.body) // Adiciona um log para ver a resposta do servidor
 

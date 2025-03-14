@@ -13,6 +13,7 @@ export class PrismaUsersRepository implements UsersRepository {
     const user = await prisma.user.create({
       data: {
         ...data, // Inclui os dados pessoais
+
         address: {
           create: data.address?.create, // Relaciona o endereço
         },

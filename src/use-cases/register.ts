@@ -2,6 +2,7 @@ import { UsersRepository } from '@/repositories/users-repository'
 import { hash } from 'bcryptjs'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 import { Role, User } from '@prisma/client'
+import { AddressesRepository } from '@/repositories/addresses-repository'
 
 interface RegisterUseCaseRequest {
   id?: string
@@ -11,7 +12,13 @@ interface RegisterUseCaseRequest {
   phone: string
   avatar: string
   role: Role
-  created_at: Date
+
+  address: {
+    street: string
+    city: string
+    state: string
+    postalCode: string
+  }
 }
 
 interface RegisterUseCaseResponse {
@@ -19,7 +26,10 @@ interface RegisterUseCaseResponse {
 }
 
 export class RegisterUseCase {
-  constructor(private usersRepository: UsersRepository) {}
+  constructor(
+    private usersRepository: UsersRepository,
+    private addressesRepository: AddressesRepository,
+  ) {}
 
   async execute({
     id,
@@ -29,29 +39,44 @@ export class RegisterUseCase {
     phone,
     avatar,
     role,
-    created_at,
+    address,
   }: RegisterUseCaseRequest): Promise<RegisterUseCaseResponse> {
-    const passwordHash = await hash(password, 6)
+    try {
+      const passwordHash = await hash(password, 6)
 
-    const userWithSameEmail = await this.usersRepository.findByEmail(email)
+      const userWithSameEmail = await this.usersRepository.findByEmail(email)
 
-    if (userWithSameEmail) {
-      throw new UserAlreadyExistsError()
+      if (userWithSameEmail) {
+        throw new UserAlreadyExistsError()
+      }
+
+      // Cria o usuário
+      const user = await this.usersRepository.create({
+        id,
+        name,
+        email,
+        passwordHash,
+        phone,
+        avatar,
+        role,
+      })
+
+      // Após criar o usuário, cadastra o endereço
+      await this.addressesRepository.create({
+        user_id: user.id,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+      })
+
+      return { user }
+    } catch (error) {
+      if (error instanceof UserAlreadyExistsError) {
+        throw error
+      }
+
+      throw new Error('Erro inesperado ao registrar usuário e endereço')
     }
-
-    //const prismaUsersRepository = new PrismaUsersRepository()
-
-    const user = await this.usersRepository.create({
-      id,
-      name,
-      email,
-      passwordHash,
-      phone,
-      avatar,
-      role,
-      created_at,
-    })
-
-    return { user }
   }
 }

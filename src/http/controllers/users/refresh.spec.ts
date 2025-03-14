@@ -13,14 +13,22 @@ describe('Refresh Token (e2e)', () => {
 
   it('should be able to refresh a token', async () => {
     // Criando usuário
-    const registerResponse = await request(app.server).post('/users').send({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-      phone: '6299775614',
-      role: 'USER',
-      avatar: 'perfil.png',
-    })
+    const registerResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'John Doe',
+        email: 'johndoe@example.com',
+        password: '123456',
+        phone: '6299775614',
+        role: 'USER',
+        avatar: 'perfil.png',
+        address: {
+          city: 'Campos Belos',
+          state: 'Goiás',
+          postalCode: '73840-000',
+          street: 'Rua 5, qd. 6, lt. 1',
+        },
+      })
 
     expect(registerResponse.statusCode).toEqual(201)
 

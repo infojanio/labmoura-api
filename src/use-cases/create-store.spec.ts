@@ -14,7 +14,12 @@ describe('Create Store Use Case', () => {
       slug: null,
       latitude: -46.9355272,
       longitude: -12.9332477,
-      //created_at: new Date(),
+      address: {
+        city: 'Campos Belos',
+        state: 'Goiás',
+        postalCode: '73840-000',
+        street: 'Rua 5, qd. 6, lt. 1',
+      },
     })
     expect(store.id).toEqual(expect.any(String))
   })

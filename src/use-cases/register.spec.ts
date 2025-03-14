@@ -2,15 +2,19 @@ import { compare } from 'bcryptjs'
 import { expect, describe, it, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
+import { InMemoryAddressesRepository } from '@/repositories/in-memory/in-memory-addresses-repository'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 
 let usersRepository: InMemoryUsersRepository
+let addressesRepository: InMemoryAddressesRepository
+
 let sut: RegisterUseCase //registerUseCase
 
 describe('Register Use Case', () => {
   beforeEach(() => {
     usersRepository = new InMemoryUsersRepository()
-    sut = new RegisterUseCase(usersRepository)
+    addressesRepository = new InMemoryAddressesRepository()
+    sut = new RegisterUseCase(usersRepository, addressesRepository)
   })
 
   it('Deve ser possível cadastrar o usuário com sucesso.', async () => {
@@ -22,7 +26,12 @@ describe('Register Use Case', () => {
       phone: '6296695513',
       avatar: 'foto.jpg',
       role: 'USER',
-      created_at: new Date(),
+      address: {
+        city: 'Campos Belos',
+        state: 'Goiás',
+        postalCode: '73840-000',
+        street: 'Rua 5, qd. 6, lt. 1',
+      },
     })
 
     expect(user.id).toEqual(expect.any(String)) //retorna qualquer id do tipo string
@@ -36,9 +45,13 @@ describe('Register Use Case', () => {
       password: '123456',
       phone: '6296695513',
       avatar: 'foto.jpg',
-
       role: 'USER',
-      created_at: new Date(),
+      address: {
+        city: 'Campos Belos',
+        state: 'Goiás',
+        postalCode: '73840-000',
+        street: 'Rua 5, qd. 6, lt. 1',
+      },
     })
 
     const isPasswordCorrectlyHashed = await compare('123456', user.passwordHash)
@@ -56,7 +69,12 @@ describe('Register Use Case', () => {
       phone: '6296695513',
       avatar: 'foto.jpg',
       role: 'USER',
-      created_at: new Date(),
+      address: {
+        city: 'Campos Belos',
+        state: 'Goiás',
+        postalCode: '73840-000',
+        street: 'Rua 5, qd. 6, lt. 1',
+      },
     })
 
     //sempre usar o await quando o retorno for .rejects.toBeInstaceOf
@@ -69,7 +87,12 @@ describe('Register Use Case', () => {
         phone: '6296695513',
         avatar: 'foto.jpg',
         role: 'USER',
-        created_at: new Date(),
+        address: {
+          city: 'Campos Belos',
+          state: 'Goiás',
+          postalCode: '73840-000',
+          street: 'Rua 5, qd. 6, lt. 1',
+        },
       }),
     ).rejects.toBeInstanceOf(UserAlreadyExistsError) //rejeita e retorna erro
   })

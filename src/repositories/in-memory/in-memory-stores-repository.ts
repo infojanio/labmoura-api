@@ -5,11 +5,12 @@ import {
 } from '@/repositories/stores-repository'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 
-import { OrderItem, Prisma, Store } from '@prisma/client'
+import { Address, OrderItem, Prisma, Store } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 export class InMemoryStoresRepository implements StoresRepository {
   public stores: Store[] = []
+  public addresses: Address[] = []
 
   //busca lojas próximas até 15 km
   async findManyNearby(params: FindManyNearbyParams) {
@@ -56,5 +57,15 @@ export class InMemoryStoresRepository implements StoresRepository {
     this.stores.push(store)
 
     return store
+  }
+
+  async createAddress(data: Omit<Address, 'id'>) {
+    const address = {
+      id: randomUUID(),
+      ...data,
+    }
+
+    this.addresses.push(address)
+    return address
   }
 }

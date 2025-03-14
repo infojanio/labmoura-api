@@ -21,6 +21,12 @@ describe('Nearby Stores (e2e)', () => {
         slug: 'Some description.',
         latitude: -12.9301785,
         longitude: -46.9520646,
+        address: {
+          city: 'Campos Belos',
+          state: 'Goiás',
+          postalCode: '73840-000',
+          street: 'Rua 5, qd. 6, lt. 1',
+        },
       })
 
     // Criando uma loja FORA do raio permitido (> 40 km)
@@ -32,6 +38,12 @@ describe('Nearby Stores (e2e)', () => {
         slug: 'Some description.',
         latitude: -27.2092052, // Distância maior
         longitude: -47.5271038, // Distância maior
+        address: {
+          city: 'Campos Belos',
+          state: 'Goiás',
+          postalCode: '73840-000',
+          street: 'Rua 5, qd. 6, lt. 1',
+        },
       })
 
     // Chamando a rota de busca de lojas próximas
