@@ -1,4 +1,4 @@
-import { ProductsRepository } from '@/repositories/products-repository'
+import { ProductsRepository } from '@/repositories/prisma/Iprisma/products-repository'
 import { Prisma, Product } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import { randomUUID } from 'crypto'

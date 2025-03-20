@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeCreateProductUseCase } from '@/use-cases/factories/make-create-product-use-case'
+import { makeCreateProductUseCase } from '@/factories/make-create-product-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   /*

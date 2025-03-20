@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { CashbacksRepository } from '../cashbacks-repository'
+import { CashbacksRepository } from './Iprisma/cashbacks-repository'
 import { Cashback } from '@prisma/client'
 import { Prisma } from '@prisma/client'
 

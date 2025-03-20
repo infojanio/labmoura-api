@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 
 import { z } from 'zod'
-import { makeFetchUserOrdersHistoryUseCase } from '@/use-cases/factories/make-fetch-user-orders-history-use-case'
+import { makeFetchUserOrdersHistoryUseCase } from '@/factories/make-fetch-user-orders-history-use-case'
 export async function history(request: FastifyRequest, reply: FastifyReply) {
   const orderHistoryQuerySchema = z.object({
     page: z.coerce.number().min(1).default(1),

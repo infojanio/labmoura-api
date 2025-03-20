@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma, User } from '@prisma/client'
-import { UsersRepository } from '../users-repository'
+import { UsersRepository } from './Iprisma/users-repository'
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 export class PrismaUsersRepository implements UsersRepository {
   /**
@@ -43,5 +44,19 @@ export class PrismaUsersRepository implements UsersRepository {
       },
     })
     return user
+  }
+
+  async update(
+    user_id: string,
+    data: Prisma.UserUncheckedUpdateInput,
+  ): Promise<User> {
+    try {
+      return await prisma.user.update({
+        where: { id: user_id },
+        data,
+      })
+    } catch (error) {
+      throw new ResourceNotFoundError()
+    }
   }
 }

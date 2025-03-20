@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeCreateSubCategoryUseCase } from '@/use-cases/factories/make-create-subcategory-use-case'
+import { makeCreateSubCategoryUseCase } from '@/factories/make-create-subcategory-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const createSubCategoryBodySchema = z.object({

@@ -26,7 +26,7 @@ describe('Validate Order (e2e)', () => {
         store_id: store.id,
         user_id: user.id,
         totalAmount: 100,
-        validated_at: null,
+        validated_at: new Date(),
         status: 'PENDING',
         created_at: new Date(),
       },

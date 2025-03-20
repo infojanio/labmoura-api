@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeValidateOrderUseCase } from '@/use-cases/factories/make-validate-order-use-case'
+import { makeValidateOrderUseCase } from '@/factories/make-validate-order-use-case'
 export async function validate(request: FastifyRequest, reply: FastifyReply) {
   const validateOrderParamsSchema = z.object({
     orderId: z.string().uuid(),

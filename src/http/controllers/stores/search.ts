@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeSearchStoresUseCase } from '@/use-cases/factories/make-search-stores-use-case'
+import { makeSearchStoresUseCase } from '@/factories/make-search-stores-use-case'
 export async function search(request: FastifyRequest, reply: FastifyReply) {
   const searchStoresQuerySchema = z.object({
     name: z.string(), // Requer um parâmetro de busca não vazio,

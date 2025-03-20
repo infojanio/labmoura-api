@@ -1,9 +1,10 @@
-import { AddressesRepository } from '@/repositories/addresses-repository'
+import { AddressesRepository } from '@/repositories/prisma/Iprisma/addresses-repository'
 
-import { Prisma, Address } from '@prisma/client'
+import { Prisma, Address, User } from '@prisma/client'
 import { randomUUID } from 'crypto'
 
 export class InMemoryAddressesRepository implements AddressesRepository {
+  public users: User[] = []
   public items: Address[] = []
 
   async create(data: Prisma.AddressUncheckedCreateInput): Promise<Address> {
@@ -24,6 +25,10 @@ export class InMemoryAddressesRepository implements AddressesRepository {
 
   async findById(addressId: string): Promise<Address | null> {
     return this.items.find((address) => address.id === addressId) || null
+  }
+
+  async findByUserId(user_id: string): Promise<Address | null> {
+    return this.items.find((address) => address.user_id === user_id) || null
   }
 
   async update(addressId: string, data: Partial<Address>): Promise<Address> {

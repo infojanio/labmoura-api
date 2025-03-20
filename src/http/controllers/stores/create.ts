@@ -1,8 +1,8 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeCreateStoreUseCase } from '@/use-cases/factories/make-create-store-use-case'
+import { makeCreateStoreUseCase } from '@/factories/make-create-store-use-case'
 import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
-import { makeAddressUseCase } from '@/use-cases/factories/make-create-address-use-case'
+import { makeAddressUseCase } from '@/factories/make-create-address-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const registerStoreBodySchema = z.object({

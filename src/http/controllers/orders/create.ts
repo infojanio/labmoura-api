@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
-import { makeOrderUseCase } from '@/use-cases/factories/make-order-use-case'
+import { makeOrderUseCase } from '@/factories/make-order-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   console.log('📩 Dados recebidos:', request.body) // Debug para verificar os dados enviados

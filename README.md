@@ -3,7 +3,7 @@
 ## RFs (Requisitos Funcionais)
 
 - [x] Deve ser possível o usuário se cadastrar.
-- [] Deve ser possível o usuário cadastrar o seu endereço.
+- [x] Deve ser possível o usuário cadastrar o seu endereço ao se cadastrar.
 - [] Deve ser possível o usuário editar seu cadastro.
 - [] Deve ser possível o usuário alterar a senha.
 - [x] Deve ser possível o usuário se autenticar.
