@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import {
   FindManyNearbyParams,
   StoresRepository,
-} from '@/repositories/stores-repository'
+} from '@/repositories/prisma/Iprisma/stores-repository'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
 
 import { Address, OrderItem, Prisma, Store } from '@prisma/client'

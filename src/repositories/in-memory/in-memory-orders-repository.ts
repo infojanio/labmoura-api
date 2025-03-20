@@ -1,4 +1,4 @@
-import { OrdersRepository } from '@/repositories/orders-repository'
+import { OrdersRepository } from '@/repositories/prisma/Iprisma/orders-repository'
 import { Prisma, Order, Cashback } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
 import dayjs from 'dayjs'

@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { OrdersRepository } from '@/repositories/orders-repository'
+import { OrdersRepository } from '@/repositories/prisma/Iprisma/orders-repository'
 import { Order, Prisma } from '@prisma/client'
 import dayjs from 'dayjs'
 

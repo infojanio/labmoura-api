@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { Product, Prisma } from '@prisma/client'
-import { ProductsRepository } from '../products-repository'
+import { ProductsRepository } from './Iprisma/products-repository'
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
 
 export class PrismaProductsRepository implements ProductsRepository {

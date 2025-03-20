@@ -1,8 +1,8 @@
 import { z } from 'zod' //responsável pela validação dos dados
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
-import { makeCreateStoreUseCase } from '@/use-cases/factories/make-create-store-use-case'
-import { makeAddressUseCase } from '@/use-cases/factories/make-create-address-use-case'
+import { makeCreateStoreUseCase } from '@/factories/make-create-store-use-case'
+import { makeAddressUseCase } from '@/factories/make-create-address-use-case'
 
 export async function store(request: FastifyRequest, reply: FastifyReply) {
   const registerStoreBodySchema = z.object({

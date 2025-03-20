@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { Address, Prisma } from '@prisma/client'
-import { AddressesRepository } from '../addresses-repository'
+import { AddressesRepository } from './Iprisma/addresses-repository'
 export class PrismaAddressesRepository implements AddressesRepository {
   async create(data: Prisma.AddressUncheckedCreateInput): Promise<Address> {
     return prisma.address.create({ data })
@@ -10,13 +10,21 @@ export class PrismaAddressesRepository implements AddressesRepository {
     return prisma.address.findUnique({ where: { id: addressId } })
   }
 
+  async findByUserId(user_id: string): Promise<Address | null> {
+    const address = await prisma.address.findFirst({
+      where: { user_id },
+    })
+    return address
+  }
+
   async update(
     addressId: string,
-    data: Partial<Prisma.AddressUncheckedUpdateInput>,
+    data: Prisma.AddressUpdateInput,
   ): Promise<Address> {
-    return prisma.address.update({
+    const updatedAddress = await prisma.address.update({
       where: { id: addressId },
       data,
     })
+    return updatedAddress
   }
 }

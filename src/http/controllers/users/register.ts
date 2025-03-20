@@ -1,8 +1,8 @@
 import { z } from 'zod' //responsável pela validação dos dados
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
-import { makeRegisterUseCase } from '@/use-cases/factories/make-register-use-case'
-import { makeAddressUseCase } from '@/use-cases/factories/make-address-use-case'
+import { makeRegisterUseCase } from '@/factories/make-register-use-case'
+import { makeAddressUseCase } from '@/factories/make-address-use-case'
 
 // Definição do enum Role
 enum Role {

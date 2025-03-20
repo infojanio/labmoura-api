@@ -1,4 +1,4 @@
-import { SubCategoriesRepository } from '@/repositories/subcategories-repository'
+import { SubCategoriesRepository } from '@/repositories/prisma/Iprisma/subcategories-repository'
 import { Prisma, SubCategory } from '@prisma/client'
 import { randomUUID } from 'crypto'
 import { PrismaSubCategoriesRepository } from '../prisma/prisma-subcategories-repository'

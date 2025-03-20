@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach, afterAll, beforeAll } from 'vitest'
 import request from 'supertest'
 
-import { OrderUseCase } from '@/use-cases/order'
+import { OrderUseCase } from '@/use-cases/orders/order'
 import { OrderStatus } from '@prisma/client'
 
 import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-stores-repository'

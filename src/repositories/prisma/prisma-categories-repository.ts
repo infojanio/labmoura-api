@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { Category, Prisma } from '@prisma/client'
-import { CategoriesRepository } from '../categories-repository'
+import { CategoriesRepository } from './Iprisma/categories-repository'
 export class PrismaCategoriesRepository implements CategoriesRepository {
   async listMany(page: number): Promise<Category[]> {
     const categories = await prisma.category.findMany({

@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { SubCategory, Prisma } from '@prisma/client'
-import { SubCategoriesRepository } from '../subcategories-repository'
+import { SubCategoriesRepository } from './Iprisma/subcategories-repository'
 export class PrismaSubCategoriesRepository implements SubCategoriesRepository {
   async listMany(page: number): Promise<SubCategory[]> {
     const subcategories = await prisma.subCategory.findMany({
