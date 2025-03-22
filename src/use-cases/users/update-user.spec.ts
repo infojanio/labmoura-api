@@ -15,7 +15,7 @@ describe('Update User Use Case', () => {
   it('Deve ser possível atualizar os dados de um usuário existente.', async () => {
     // Arrange: Cria um produto inicial
     const CreatedUser = await usersRepository.create({
-      id: 'user-01',
+      id: '910f11fe-83d2-44bf-b921-b7faa4cd35e8',
       passwordHash: '2240',
       name: 'John Original',
       email: 'infojanio@gmail.com',
@@ -44,7 +44,7 @@ describe('Update User Use Case', () => {
   it('Deve lançar um erro ao tentar atualizar um usuário inexistente.', async () => {
     await expect(
       sut.execute({
-        userId: 'non-existent-id',
+        userId: '910f11fe-83d2-44bf-b921-b7faa4cd35ee',
         name: 'Usuário Inexistente',
       }),
     ).rejects.toThrow('User not found')

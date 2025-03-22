@@ -1,6 +1,7 @@
-import { AddressesRepository } from '@/repositories/prisma/Iprisma/addresses-repository'
 import { UsersRepository } from '@/repositories/prisma/Iprisma/users-repository'
 import { Role, User } from '@prisma/client'
+import { UserNotFoundError } from '../errors/user-not-found-error'
+import { EmailNotUpdatedError } from '../errors/email-not-updated-error'
 
 interface UpdateUserUseCaseRequest {
   userId: string
@@ -25,8 +26,14 @@ export class UpdateUserUseCase {
     // Verifica se o usuário existe
     const existingUser = await this.usersRepository.findById(userId)
 
+    // console.log('imprime o usuário ', existingUser)
     if (!existingUser) {
-      throw new Error('User not found')
+      throw new UserNotFoundError()
+    }
+
+    // Impede a atualização do e-mail
+    if (data.email && data.email !== existingUser.email) {
+      throw new EmailNotUpdatedError()
     }
 
     // Atualiza os dados do usuário

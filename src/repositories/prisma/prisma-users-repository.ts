@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { Prisma, User } from '@prisma/client'
 import { UsersRepository } from './Iprisma/users-repository'
 import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { userInfo } from 'os'
 
 export class PrismaUsersRepository implements UsersRepository {
   /**
@@ -27,12 +28,14 @@ export class PrismaUsersRepository implements UsersRepository {
     return user
   }
 
-  async findById(id: string) {
+  async findById(id: string): Promise<User | null> {
     const user = await prisma.user.findUnique({
       where: {
         id,
       },
     })
+    console.log('🔍 Buscando usuário com ID:', user)
+
     return user
   }
 
@@ -47,12 +50,12 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async update(
-    user_id: string,
+    userId: string,
     data: Prisma.UserUncheckedUpdateInput,
   ): Promise<User> {
     try {
       return await prisma.user.update({
-        where: { id: user_id },
+        where: { id: userId },
         data,
       })
     } catch (error) {
