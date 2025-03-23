@@ -1,6 +1,6 @@
 import { z } from 'zod' //responsável pela validação dos dados
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
+import { UserAlreadyExistsError } from '@/utils/messages/errors/user-already-exists-error'
 import { makeAddressUseCase } from '@/factories/make-address-use-case'
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {

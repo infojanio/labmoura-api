@@ -35,9 +35,32 @@ export class PrismaStoresRepository implements StoresRepository {
     })
     return stores
   }
+
+  //verifica se o email já existe
+  async findByName(name: string) {
+    const store = await prisma.store.findFirst({
+      where: {
+        name: {
+          equals: name,
+          mode: 'insensitive', // Torna a busca insensível a maiúsculas/minúsculas
+        },
+      },
+    })
+    return store
+  }
+
   async create(data: Prisma.StoreCreateInput) {
     const store = await prisma.store.create({
-      data,
+      data: {
+        ...data, // Inclui os dados pessoais
+
+        address: {
+          create: data.address?.create, // Relaciona o endereço
+        },
+      },
+      include: {
+        address: true, // Retorna os endereços associados ao usuário
+      },
     })
     return store
   }

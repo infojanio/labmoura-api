@@ -1,6 +1,9 @@
 import { StoresRepository } from '@/repositories/prisma/Iprisma/stores-repository'
 import { Store } from '@prisma/client'
-import { UserAlreadyExistsError } from '../errors/user-already-exists-error'
+import { AddressesRepository } from '@/repositories/prisma/Iprisma/addresses-repository'
+import { UserAlreadyExistsError } from '../../utils/messages/errors/user-already-exists-error'
+import { StoreAlreadyExistsError } from '../../utils/messages/errors/store-already-exists-error'
+
 interface CreateStoreUseCaseRequest {
   id?: string
   name: string
@@ -15,11 +18,17 @@ interface CreateStoreUseCaseRequest {
     postalCode: string
   }
 }
+
 interface CreateStoreUseCaseResponse {
   store: Store
 }
+
 export class CreateStoreUseCase {
-  constructor(private storesRepository: StoresRepository) {}
+  constructor(
+    private storesRepository: StoresRepository,
+    private addressesRepository: AddressesRepository,
+  ) {}
+
   async execute({
     id,
     name,
@@ -28,15 +37,14 @@ export class CreateStoreUseCase {
     longitude,
     address,
   }: CreateStoreUseCaseRequest): Promise<CreateStoreUseCaseResponse> {
-    /*
- try {
-         const storeWithSameName = await this.storesRepository.findByName(name)
+    try {
+      const storeWithSameName = await this.storesRepository.findByName(name)
 
       if (storeWithSameName) {
-        throw new UserAlreadyExistsError()
+        throw new StoreAlreadyExistsError()
       }
-*/
-    try {
+
+      // Cria a loja
       const store = await this.storesRepository.create({
         id,
         name,
@@ -44,15 +52,25 @@ export class CreateStoreUseCase {
         latitude,
         longitude,
       })
+
+      // Após criar a loja, cadastra o endereço
+      await this.addressesRepository.create({
+        store_id: store.id,
+        street: address.street,
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+      })
+
       return {
         store,
       }
     } catch (error) {
-      if (error instanceof UserAlreadyExistsError) {
+      if (error instanceof StoreAlreadyExistsError) {
         throw error
       }
-
-      throw new Error('Erro inesperado ao registrar usuário e endereço')
+      console.error('Erro ao criar a loja:', error)
+      throw new Error('Erro inesperado ao registrar loja e endereço')
     }
   }
 }

@@ -45,6 +45,16 @@ export class InMemoryStoresRepository implements StoresRepository {
       .slice((page - 1) * 20, page * 20)
   }
 
+  //verifica se o nome já existe
+  async findByName(name: string) {
+    const store = await prisma.store.findFirst({
+      where: {
+        name,
+      },
+    })
+    return store
+  }
+
   async create(data: Prisma.StoreCreateInput) {
     const store = {
       id: data.id ?? randomUUID(),

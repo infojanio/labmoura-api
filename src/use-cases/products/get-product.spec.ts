@@ -1,5 +1,5 @@
 import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/utils/messages/errors/resource-not-found-error'
 import { GetProductUseCase } from '@/use-cases/products/get-product'
 import { hash } from 'bcryptjs'
 import { expect, describe, it, beforeEach } from 'vitest'

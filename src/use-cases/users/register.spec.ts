@@ -3,7 +3,7 @@ import { expect, describe, it, beforeEach } from 'vitest'
 import { RegisterUseCase } from './register'
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { InMemoryAddressesRepository } from '@/repositories/in-memory/in-memory-addresses-repository'
-import { UserAlreadyExistsError } from '../errors/user-already-exists-error'
+import { UserAlreadyExistsError } from '../../utils/messages/errors/user-already-exists-error'
 
 let usersRepository: InMemoryUsersRepository
 let addressesRepository: InMemoryAddressesRepository

@@ -5,6 +5,9 @@ export function makeCreateStoreUseCase() {
   const storesRepository = new PrismaStoresRepository()
   const addressesRepository = new PrismaAddressesRepository()
 
-  const useCase = new CreateStoreUseCase(storesRepository)
-  return useCase
+  const createStoreUseCase = new CreateStoreUseCase(
+    storesRepository,
+    addressesRepository,
+  )
+  return createStoreUseCase
 }

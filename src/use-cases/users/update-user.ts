@@ -1,7 +1,7 @@
 import { UsersRepository } from '@/repositories/prisma/Iprisma/users-repository'
 import { Role, User } from '@prisma/client'
-import { UserNotFoundError } from '../errors/user-not-found-error'
-import { EmailNotUpdatedError } from '../errors/email-not-updated-error'
+import { UserNotFoundError } from '../../utils/messages/errors/user-not-found-error'
+import { EmailNotUpdatedError } from '../../utils/messages/errors/email-not-updated-error'
 
 interface UpdateUserUseCaseRequest {
   userId: string

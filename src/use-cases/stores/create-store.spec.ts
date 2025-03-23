@@ -1,16 +1,23 @@
 import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-stores-repository'
 import { expect, describe, it, beforeEach } from 'vitest'
 import { CreateStoreUseCase } from './create-store'
+import { InMemoryAddressesRepository } from '@/repositories/in-memory/in-memory-addresses-repository'
+
 let storesRepository: InMemoryStoresRepository
+let addressesRepository: InMemoryAddressesRepository
 let sut: CreateStoreUseCase
+
 describe('Create Store Use Case', () => {
   beforeEach(() => {
     storesRepository = new InMemoryStoresRepository()
-    sut = new CreateStoreUseCase(storesRepository)
+    addressesRepository = new InMemoryAddressesRepository()
+    sut = new CreateStoreUseCase(storesRepository, addressesRepository)
   })
+
   it('Deve ser possível cadastrar uma loja.', async () => {
     const { store } = await sut.execute({
-      name: '6c9e20cc-010b-48c9-a71d-219d12427910',
+      id: '45c1fac7-aacc-45cd-829e-9009282d8623',
+      name: 'Loja Ramar',
       slug: null,
       latitude: -46.9355272,
       longitude: -12.9332477,
@@ -21,6 +28,7 @@ describe('Create Store Use Case', () => {
         street: 'Rua 5, qd. 6, lt. 1',
       },
     })
+
     expect(store.id).toEqual(expect.any(String))
   })
 })

@@ -26,6 +26,7 @@ describe('Nearby Stores (e2e)', () => {
           state: 'Goiás',
           postalCode: '73840-000',
           street: 'Rua 5, qd. 6, lt. 1',
+          user_id: 'userId-01',
         },
       })
 
@@ -43,6 +44,7 @@ describe('Nearby Stores (e2e)', () => {
           state: 'Goiás',
           postalCode: '73840-000',
           street: 'Rua 5, qd. 6, lt. 1',
+          user_id: 'userId-01',
         },
       })
 

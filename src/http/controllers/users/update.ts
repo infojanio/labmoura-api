@@ -2,8 +2,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { z } from 'zod'
 import { makeUpdateUserUseCase } from '@/factories/make-update-user-use-case'
-import { UserNotFoundError } from '@/use-cases/errors/user-not-found-error'
-import { EmailNotUpdatedError } from '@/use-cases/errors/email-not-updated-error'
+import { UserNotFoundError } from '@/utils/messages/errors/user-not-found-error'
+import { EmailNotUpdatedError } from '@/utils/messages/errors/email-not-updated-error'
+import { UserUpdatedSuccess } from '@/utils/messages/success/user-updated-success'
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
   // Validação dos parâmetros da rota (userId)
@@ -32,7 +33,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
       ...updateData,
     })
 
-    return reply.status(204).send({ message: 'user updated successfullys!' }) // Atualização bem-sucedida, sem corpo
+    return reply.status(204).send({ UserUpdatedSuccess }) // Atualização bem-sucedida, sem corpo
   } catch (error) {
     //erro de validação
     if (error instanceof z.ZodError) {

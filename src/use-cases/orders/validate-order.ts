@@ -1,7 +1,7 @@
 import { OrdersRepository } from '@/repositories/prisma/Iprisma/orders-repository'
 
-import { LateOrderValidationError } from '@/use-cases/errors/late-order-validation-error'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { LateOrderValidationError } from '@/utils/messages/errors/late-order-validation-error'
+import { ResourceNotFoundError } from '@/utils/messages/errors/resource-not-found-error'
 import { Order } from '@prisma/client'
 import dayjs from 'dayjs'
 

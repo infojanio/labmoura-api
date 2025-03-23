@@ -4,7 +4,7 @@
 
 - [x] Deve ser possível o usuário se cadastrar.
 - [x] Deve ser possível o usuário cadastrar o seu endereço ao se cadastrar.
-- [] Deve ser possível o usuário editar seu cadastro.
+- [x] Deve ser possível o usuário editar seu cadastro.
 - [] Deve ser possível o usuário alterar a senha.
 - [x] Deve ser possível o usuário se autenticar.
 - [x] Deve ser possível obter o perfil do usuário logado.

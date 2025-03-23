@@ -3,8 +3,8 @@ import { StoresRepository } from '@/repositories/prisma/Iprisma/stores-repositor
 
 import { Order, OrderStatus, User } from '@prisma/client'
 import { getDistanceBetweenCoordinates } from '@/utils/get-distance-between-coordinates'
-import { MaxDistanceError } from '../errors/max-distance-error'
-import { MaxNumberOfOrdersError } from '../errors/max-number-of-orders-error'
+import { MaxDistanceError } from '../../utils/messages/errors/max-distance-error'
+import { MaxNumberOfOrdersError } from '../../utils/messages/errors/max-number-of-orders-error'
 import { OrderItemsRepository } from '@/repositories/prisma/prisma-order-items-repository'
 import { UsersRepository } from '@/repositories/prisma/Iprisma/users-repository'
 import { ProductsRepository } from '@/repositories/prisma/Iprisma/products-repository'

@@ -13,7 +13,7 @@ import { Decimal } from '@prisma/client/runtime/library'
 import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-orders-repository'
 import { InMemoryStoresRepository } from '@/repositories/in-memory/in-memory-stores-repository'
 import { OrderUseCase } from '@/use-cases/orders/order'
-import { MaxNumberOfOrdersError } from '@/use-cases/errors/max-number-of-orders-error'
+import { MaxNumberOfOrdersError } from '@/utils/messages/errors/max-number-of-orders-error'
 
 import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository'
 import { InMemoryProductsRepository } from '@/repositories/in-memory/in-memory-products-repository'

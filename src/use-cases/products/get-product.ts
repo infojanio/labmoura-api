@@ -1,6 +1,6 @@
 import { ProductsRepository } from '@/repositories/prisma/Iprisma/products-repository'
 import { Product } from '@prisma/client'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/utils/messages/errors/resource-not-found-error'
 
 interface GetProductUseCaseRequest {
   productId: string

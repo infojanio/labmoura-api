@@ -1,6 +1,6 @@
 import { z } from 'zod' //responsável pela validação dos dados
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error'
+import { UserAlreadyExistsError } from '@/utils/messages/errors/user-already-exists-error'
 import { makeRegisterUseCase } from '@/factories/make-register-use-case'
 import { makeAddressUseCase } from '@/factories/make-address-use-case'
 
@@ -25,7 +25,7 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
       state: z.string(),
       postalCode: z.string(),
       user_id: z.string().optional(),
-      store_id: z.string().optional(),
+      //  store_id: z.string().optional(),
     }),
   })
 
@@ -56,12 +56,13 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
 
     // Cria o endereço associado ao usuário
     const createAddressUseCase = makeAddressUseCase()
+
     const userAddress = await createAddressUseCase.execute({
       street: address.street,
       city: address.city,
       state: address.state,
       postalCode: address.postalCode,
-      store_id: address.store_id,
+      // store_id: address.store_id,
       user_id: user.id,
     })
 

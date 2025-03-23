@@ -1,5 +1,5 @@
 import { InMemoryOrdersRepository } from '@/repositories/in-memory/in-memory-orders-repository'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/utils/messages/errors/resource-not-found-error'
 import { expect, describe, it, beforeEach, afterEach, vi } from 'vitest'
 import { ValidateOrderUseCase } from './validate-order'
 let ordersRepository: InMemoryOrdersRepository

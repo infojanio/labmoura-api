@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { Prisma, User } from '@prisma/client'
 import { UsersRepository } from './Iprisma/users-repository'
-import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error'
+import { ResourceNotFoundError } from '@/utils/messages/errors/resource-not-found-error'
 import { userInfo } from 'os'
 
 export class PrismaUsersRepository implements UsersRepository {

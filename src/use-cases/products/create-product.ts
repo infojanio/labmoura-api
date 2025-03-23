@@ -2,7 +2,7 @@ import { Product } from '@prisma/client'
 import { ProductsRepository } from '@/repositories/prisma/Iprisma/products-repository'
 import { StoresRepository } from '@/repositories/prisma/Iprisma/stores-repository'
 import { SubCategoriesRepository } from '@/repositories/prisma/Iprisma/subcategories-repository'
-import { ResourceNotFoundError } from '../errors/resource-not-found-error'
+import { ResourceNotFoundError } from '../../utils/messages/errors/resource-not-found-error'
 import { error } from 'console'
 
 interface CreateProductUseCaseRequest {

@@ -26,6 +26,7 @@ describe('Authenticate (e2e)', () => {
           state: 'Goiás',
           postalCode: '73840-000',
           street: 'Rua 5, qd. 6, lt. 1',
+          user_id: 'userId-01',
         },
       })
     console.log('🟢 Register Response:', registerResponse.body) // 🔹 Debug do usuário criado
