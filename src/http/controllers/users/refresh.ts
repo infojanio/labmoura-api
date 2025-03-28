@@ -42,7 +42,7 @@ export async function refresh(request: FastifyRequest, reply: FastifyReply) {
     // Gera um novo access token
     const newAccessToken = await reply.jwtSign(
       { role },
-      { sign: { sub: userId, expiresIn: '15m' } },
+      { sign: { sub: userId, expiresIn: '50m' } },
     )
 
     // Define uma nova data de expiração (7 dias a partir de agora)

@@ -15,8 +15,8 @@ export async function register(request: FastifyRequest, reply: FastifyReply) {
     // id: z.string(),
     name: z.string(),
     email: z.string().email(),
-    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
     phone: z.string(),
+    password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
     role: z.nativeEnum(Role), // 🔹 Agora valida apenas os valores do enum
     avatar: z.string(),
     address: z.object({
