@@ -26,6 +26,14 @@ export async function authenticate(
       return reply.status(400).send({ message: 'Invalid credentials' })
     }
 
+    //consulta o saldo do usuário na tabela cashbacks
+    const cashback = await prisma.cashback.findFirst({
+      where: { user_id: user.id },
+      select: { amount: true },
+    })
+
+    const userBalance = cashback ? cashback.amount : 0
+
     const token = await reply.jwtSign(
       { role: user.role },
       { sign: { sub: user.id, expiresIn: '15m' } },
@@ -50,8 +58,9 @@ export async function authenticate(
         id: user.id,
         name: user.name,
         email: user.email,
-
         role: user.role,
+        avatar: user.avatar,
+        balance: userBalance,
       },
       accessToken: token,
       refreshToken,

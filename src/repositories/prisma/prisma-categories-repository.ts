@@ -2,13 +2,6 @@ import { prisma } from '@/lib/prisma'
 import { Category, Prisma } from '@prisma/client'
 import { CategoriesRepository } from './Iprisma/categories-repository'
 export class PrismaCategoriesRepository implements CategoriesRepository {
-  async listMany(page: number): Promise<Category[]> {
-    const categories = await prisma.category.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
-    })
-    return categories
-  }
   async findById(id: string) {
     const category = await prisma.category.findUnique({
       where: {
@@ -17,6 +10,12 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
     })
     return category
   }
+
+  async listMany(): Promise<Category[]> {
+    const categories = await prisma.category.findMany()
+    return categories
+  }
+
   async searchMany(query?: string, page: number = 1): Promise<Category[]> {
     // Se o query for vazio ou não fornecido, retorna todas as categorias paginadas
     if (!query) {

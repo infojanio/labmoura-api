@@ -7,6 +7,8 @@ export interface ProductsRepository {
   findByStoreId(store_id: string): Promise<Product[] | null>
   findBySubcategoryId(subcategory_id: string): Promise<Product[] | null>
   create(data: Prisma.ProductUncheckedCreateInput): Promise<Product>
+  listMany(): Promise<Product[]> //listar todos
+  findBySubCategory(subcategory_id: string): Promise<Product[]> //buscar por subcategoria
   searchMany(search: string, page: number): Promise<Product[]> //buscar por nome
   update(
     product_id: string,

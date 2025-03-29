@@ -3,4 +3,5 @@ export interface SubCategoriesRepository {
   findById(id: string): Promise<SubCategory | null>
   create(data: Prisma.SubCategoryUncheckedCreateInput): Promise<SubCategory>
   searchMany(search: string, page: number): Promise<SubCategory[]> //buscar por nome
+  findByCategory(category_id: string): Promise<SubCategory[]> //buscar por categoria
 }

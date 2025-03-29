@@ -17,6 +17,16 @@ export class PrismaSubCategoriesRepository implements SubCategoriesRepository {
     })
     return subcategory
   }
+
+  async findByCategory(category_id: string): Promise<SubCategory[]> {
+    const subcategory = await prisma.subCategory.findMany({
+      where: {
+        category_id,
+      },
+    })
+    return subcategory
+  }
+
   async searchMany(query?: string, page: number = 1): Promise<SubCategory[]> {
     // Se o query for vazio ou não fornecido, retorna todas as categorias paginadas
     if (!query) {

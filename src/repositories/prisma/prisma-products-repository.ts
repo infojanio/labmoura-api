@@ -61,6 +61,20 @@ export class PrismaProductsRepository implements ProductsRepository {
     return productUpdate
   }
 
+  async listMany(): Promise<Product[]> {
+    const products = await prisma.product.findMany()
+    return products
+  }
+
+  async findBySubCategory(subcategory_id: string): Promise<Product[]> {
+    const product = await prisma.product.findMany({
+      where: {
+        subcategory_id,
+      },
+    })
+    return product
+  }
+
   async searchMany(search: string, page: number): Promise<Product[]> {
     const products = await prisma.product.findMany({
       where: {
