@@ -4,6 +4,9 @@ import { randomUUID } from 'crypto'
 import { PrismaSubCategoriesRepository } from '../prisma/prisma-subcategories-repository'
 export class InMemorySubCategoriesRepository
   implements SubCategoriesRepository {
+  findByCategory(category_id: string): Promise<SubCategory[]> {
+    throw new Error('Method not implemented.')
+  }
   public items: SubCategory[] = []
 
   async findById(id: string) {

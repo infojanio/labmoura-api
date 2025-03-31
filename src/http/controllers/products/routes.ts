@@ -4,10 +4,14 @@ import { create } from '../products/create'
 import { verifyUserRole } from '@/http/middlewares/verify-user-role'
 import { listProducts } from './listProducts'
 import { fetchProductsBySubCategory } from './fetch-products-by-subcategory'
+import { fetchProductsByCashback } from './fetch-products-by-cashback'
+import { fetchProductsByQuantity } from './fetch-products-by-quantity'
 
 export async function productsRoutes(app: FastifyInstance) {
   app.addHook('onRequest', verifyJWT)
 
+  app.get('/products/quantity', fetchProductsByQuantity)
+  app.get('/products/cashback', fetchProductsByCashback)
   app.get('/products', listProducts)
   app.get('/products/:subcategory_id', fetchProductsBySubCategory)
   app.post(

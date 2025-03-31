@@ -1,16 +1,18 @@
 import { ProductsRepository } from '@/repositories/prisma/Iprisma/products-repository'
 import { Product, Prisma } from '@prisma/client'
-interface FetchProductUseCaseRequest {
+interface FetchProductSubCategoryUseCaseRequest {
   subcategory_id: string
 }
-interface FetchProductUseCaseResponse {
+interface FetchProductSubCategoryUseCaseResponse {
   product: Product[]
 }
 export class FetchProductsBySubCategoryUseCase {
   constructor(private productsRepository: ProductsRepository) {}
   async execute({
     subcategory_id,
-  }: FetchProductUseCaseRequest): Promise<FetchProductUseCaseResponse> {
+  }: FetchProductSubCategoryUseCaseRequest): Promise<
+    FetchProductSubCategoryUseCaseResponse
+  > {
     const product = await this.productsRepository.findBySubCategory(
       subcategory_id,
     )

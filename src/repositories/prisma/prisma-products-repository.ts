@@ -66,6 +66,32 @@ export class PrismaProductsRepository implements ProductsRepository {
     return products
   }
 
+  async findByCashback(): Promise<Product[]> {
+    const products = await prisma.product.findMany({
+      where: {
+        cashbackPercentage: {
+          gte: 5, // Retorna produtos com cashback maior ou igual a 5
+          //   gte: cashbackPercentage, // Busca produtos com cashback maior que o valor informado
+        },
+      },
+    })
+
+    return products
+  }
+
+  async findByQuantity(): Promise<Product[]> {
+    const products = await prisma.product.findMany({
+      where: {
+        quantity: {
+          lte: 5, // Retorna produtos com quantidade menor ou igual a 5
+          //   gte: cashbackPercentage, // Busca produtos com cashback maior que o valor informado
+        },
+      },
+    })
+
+    return products
+  }
+
   async findBySubCategory(subcategory_id: string): Promise<Product[]> {
     const product = await prisma.product.findMany({
       where: {

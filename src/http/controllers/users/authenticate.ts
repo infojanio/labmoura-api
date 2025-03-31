@@ -36,7 +36,7 @@ export async function authenticate(
 
     const token = await reply.jwtSign(
       { role: user.role },
-      { sign: { sub: user.id, expiresIn: '15m' } },
+      { sign: { sub: user.id, expiresIn: '50m' } },
     )
 
     const refreshToken = await reply.jwtSign(

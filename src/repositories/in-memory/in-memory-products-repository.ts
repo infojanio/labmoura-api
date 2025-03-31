@@ -4,6 +4,18 @@ import { Decimal } from '@prisma/client/runtime/library'
 import { randomUUID } from 'crypto'
 
 export class InMemoryProductsRepository implements ProductsRepository {
+  findByQuantity(quantity: number): Promise<Product[]> {
+    throw new Error('Method not implemented.')
+  }
+  findByCashback(cashbackPercentage: number): Promise<Product[]> {
+    throw new Error('Method not implemented.')
+  }
+  listMany(): Promise<Product[]> {
+    throw new Error('Method not implemented.')
+  }
+  findBySubCategory(subcategory_id: string): Promise<Product[]> {
+    throw new Error('Method not implemented.')
+  }
   public items: Product[] = []
 
   async findByIds(ids: string[]): Promise<Product[]> {
