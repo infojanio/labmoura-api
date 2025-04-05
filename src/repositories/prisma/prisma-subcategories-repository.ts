@@ -2,13 +2,11 @@ import { prisma } from '@/lib/prisma'
 import { SubCategory, Prisma } from '@prisma/client'
 import { SubCategoriesRepository } from './Iprisma/subcategories-repository'
 export class PrismaSubCategoriesRepository implements SubCategoriesRepository {
-  async listMany(page: number): Promise<SubCategory[]> {
-    const subcategories = await prisma.subCategory.findMany({
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+  async listMany(): Promise<SubCategory[]> {
+    const subcategories = await prisma.subCategory.findMany()
     return subcategories
   }
+
   async findById(id: string) {
     const subcategory = await prisma.subCategory.findUnique({
       where: {
@@ -18,13 +16,35 @@ export class PrismaSubCategoriesRepository implements SubCategoriesRepository {
     return subcategory
   }
 
-  async findByCategory(category_id: string): Promise<SubCategory[]> {
+  async findByCategory(category_id?: string): Promise<SubCategory[]> {
     const subcategory = await prisma.subCategory.findMany({
       where: {
         category_id,
       },
     })
     return subcategory
+  }
+
+  async listByCategory(categoryId: string): Promise<SubCategory[]> {
+    if (!categoryId) {
+      throw new Error('O ID da categoria é obrigatório.')
+    }
+
+    const subcategories = await prisma.subCategory.findMany({
+      where: {
+        category_id: categoryId,
+      },
+      include: {
+        Category: {
+          select: {
+            id: true,
+            name: true, // Aqui você especifica os campos que quer incluir da tabela Category
+          },
+        },
+      },
+    })
+
+    return subcategories
   }
 
   async searchMany(query?: string, page: number = 1): Promise<SubCategory[]> {

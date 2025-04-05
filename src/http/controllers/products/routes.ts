@@ -13,7 +13,7 @@ export async function productsRoutes(app: FastifyInstance) {
   app.get('/products/quantity', fetchProductsByQuantity)
   app.get('/products/cashback', fetchProductsByCashback)
   app.get('/products', listProducts)
-  app.get('/products/:subcategory_id', fetchProductsBySubCategory)
+  app.get('/products/subcategory', fetchProductsBySubCategory)
   app.post(
     //    '/stores/${storeId}/subcategories/${subcategoryId}/products',
     '/products',

@@ -6,17 +6,25 @@ export async function fetchProductsBySubCategory(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
-  const fetchProductsParamsSchema = z.object({
-    subcategory_id: z.string(),
-  })
+  try {
+    const fetchProductsQuerySchema = z.object({
+      subcategoryId: z.string(),
+    })
 
-  const { subcategory_id } = fetchProductsParamsSchema.parse(request.params)
+    const { subcategoryId } = fetchProductsQuerySchema.parse(request.query)
 
-  const fetchProductsBySubCategoryUseCase = makeFetchProductsBySubCategoryUseCase()
+    // Converte para número e define 3 como valor padrão caso não seja passado
+    //const categoryValue = categoryId ? String(categoryId) : ''
 
-  const products = await fetchProductsBySubCategoryUseCase.execute({
-    subcategory_id,
-  })
+    const fetchProductsBySubCategoryUseCase = makeFetchProductsBySubCategoryUseCase()
 
-  return reply.status(200).send(products)
+    const products = await fetchProductsBySubCategoryUseCase.execute({
+      subcategoryId: subcategoryId ?? undefined, // passa undefined se não existir
+    })
+
+    console.log('Result', products)
+    return reply.status(200).send(products)
+  } catch (error) {
+    return reply.status(400).send({ error: error })
+  }
 }

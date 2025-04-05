@@ -4,6 +4,11 @@ import { randomUUID } from 'crypto'
 import { PrismaCategoriesRepository } from '../prisma/prisma-categories-repository'
 export class InMemoryCategoriesRepository implements CategoriesRepository {
   public items: Category[] = []
+
+  listMany(): Promise<Category[]> {
+    throw new Error('Method not implemented.')
+  }
+
   async findById(id: string) {
     const category = this.items.find((item) => item.id === id)
     if (!category) {

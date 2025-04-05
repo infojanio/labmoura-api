@@ -36,12 +36,12 @@ export async function authenticate(
 
     const token = await reply.jwtSign(
       { role: user.role },
-      { sign: { sub: user.id, expiresIn: '50m' } },
+      { sign: { sub: user.id, expiresIn: '360m' } },
     )
 
     const refreshToken = await reply.jwtSign(
       { role: user.role },
-      { sign: { sub: user.id, expiresIn: '7d' } },
+      { sign: { sub: user.id, expiresIn: '1d' } },
     )
 
     // Salva o refresh token no banco de dados

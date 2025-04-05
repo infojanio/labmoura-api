@@ -1,21 +1,19 @@
 import { SubCategoriesRepository } from '@/repositories/prisma/Iprisma/subcategories-repository'
-import { SubCategory, Prisma } from '@prisma/client'
+import { SubCategory } from '@prisma/client'
+
 interface FetchSubCategoryUseCaseRequest {
-  category_id: string
+  categoryId: string
 }
-interface FetchSubCategoryUseCaseResponse {
-  subcategory: SubCategory[]
-}
+
 export class FetchSubcategoriesByCategoryUseCase {
   constructor(private subcategoriesRepository: SubCategoriesRepository) {}
+
   async execute({
-    category_id,
-  }: FetchSubCategoryUseCaseRequest): Promise<FetchSubCategoryUseCaseResponse> {
-    const subcategory = await this.subcategoriesRepository.findByCategory(
-      category_id,
+    categoryId,
+  }: FetchSubCategoryUseCaseRequest): Promise<SubCategory[] | null> {
+    const subcategory = await this.subcategoriesRepository.listByCategory(
+      categoryId,
     )
-    return {
-      subcategory,
-    }
+    return subcategory
   }
 }
