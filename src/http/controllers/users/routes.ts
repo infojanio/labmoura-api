@@ -17,7 +17,7 @@ export async function usersRoutes(app: FastifyInstance) {
   //app.put('/users/update', update)
   app.patch('/users/:userId', { onRequest: [verifyJWT] }, update)
 
-  app.patch('/token/refresh', refresh) //pega o token e atualiza
+  app.post('/token/refresh', refresh) //pega o token e atualiza
   app.get('/me', { onRequest: [verifyJWT] }, profile)
 
   // app.put('/users/:id', { onRequest: [verifyJWT] }, update) //atualiza o usuário

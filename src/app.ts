@@ -13,7 +13,7 @@ import { subcategoriesRoutes } from '@/http/controllers/subcategories/routes'
 import { categoriesRoutes } from './http/controllers/categories/routes'
 
 export const app = fastify({
-  // logger: true,
+  //logger: true,
 })
 // Habilita JSON no body
 app.register(fastifyFormBody)
