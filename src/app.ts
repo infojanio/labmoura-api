@@ -2,15 +2,20 @@ import fastify from 'fastify'
 import fastifyJwt from '@fastify/jwt'
 import fastifyCors from '@fastify/cors'
 import fastifyFormBody from '@fastify/formbody'
+import fastifyStatic from '@fastify/static'
+import path from 'path'
+
 import { ZodError } from 'zod'
 import { env } from './.env'
 
 import { reportsRoutes } from '@/http/controllers/reports/routes'
+import fastifyMultipart from '@fastify/multipart'
 
 export const app = fastify({
   //logger: true,
 })
 // Habilita JSON no body
+app.register(fastifyMultipart)
 app.register(fastifyFormBody)
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
 app.register(fastifyCors, {
@@ -18,6 +23,15 @@ app.register(fastifyCors, {
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Só se estiver usando autenticação com cookies/tokens
+})
+app.register(fastifyStatic, {
+  root: path.resolve('tmp'),
+  prefix: '/pdf/',
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.pdf')) {
+      res.setHeader('Content-Type', 'application/pdf')
+    }
+  },
 })
 
 app.register(reportsRoutes)

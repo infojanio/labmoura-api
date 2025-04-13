@@ -1,0 +1,14 @@
+-- AlterTable
+ALTER TABLE "reports" ALTER COLUMN "customer_name" DROP NOT NULL,
+ALTER COLUMN "address" DROP NOT NULL,
+ALTER COLUMN "document" DROP NOT NULL,
+ALTER COLUMN "phone" DROP NOT NULL,
+ALTER COLUMN "email" DROP NOT NULL,
+ALTER COLUMN "technician_name" DROP NOT NULL,
+ALTER COLUMN "sample_origin" DROP NOT NULL,
+ALTER COLUMN "sample_type" DROP NOT NULL,
+ALTER COLUMN "entry_date" DROP NOT NULL,
+ALTER COLUMN "collection_date" DROP NOT NULL,
+ALTER COLUMN "collection_time" DROP NOT NULL,
+ALTER COLUMN "collection_agent" DROP NOT NULL,
+ALTER COLUMN "analysis_results" DROP NOT NULL;

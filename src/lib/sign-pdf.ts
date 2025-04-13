@@ -1,4 +1,4 @@
-// POST /sign-pdf
+/* POST /sign-pdf
 import { FastifyRequest, FastifyReply } from 'fastify'
 import { signPdf } from '@/lib/sign-pdf-node'
 import fs from 'fs'
@@ -39,3 +39,4 @@ export async function signUploadedPDF(
     if (fs.existsSync(tempOutput)) fs.unlinkSync(tempOutput)
   }
 }
+*/

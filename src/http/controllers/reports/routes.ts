@@ -4,6 +4,7 @@ import { create } from './create'
 import { findReportById } from './fetch-report-by-id'
 //import { updateReport } from './update-report'
 import { downloadSignedPdf } from './download'
+import { uploadPdfController } from './upload'
 
 export async function reportsRoutes(app: FastifyInstance) {
   app.get('/reports', listReports)
@@ -12,6 +13,7 @@ export async function reportsRoutes(app: FastifyInstance) {
 
   app.get('/reports/:id', findReportById)
 
+  app.post('/reports/upload-pdf', uploadPdfController)
   //app.put('/reports/:id', updateReport)
 
   // 📄 Nova rota pública para PDF assinado

@@ -2,19 +2,27 @@ import { execSync } from 'child_process'
 import path from 'path'
 import fs from 'fs'
 
-export async function signPdf(
-  input: string,
-  output: string,
-  certificate: string,
-  certPassword: string,
-  javaOpts: string[] = [],
-): Promise<void> {
+interface SignPdfOptions {
+  input: string
+  output: string
+  certificate: string
+  certPassword: string
+  javaOpts?: string[]
+}
+
+export async function signPdf({
+  input,
+  output,
+  certificate,
+  certPassword,
+  javaOpts = [],
+}: SignPdfOptions): Promise<void> {
   const jsignpdfPath = path.resolve(__dirname, 'jsignpdf/jsignpdf.jar')
   const javaCmd = process.env.JAVA_HOME
-    ? `${path.join(process.env.JAVA_HOME, 'bin', 'java')}`
+    ? path.join(process.env.JAVA_HOME, 'bin', 'java')
     : 'java'
 
-  // 1. Preparação de caminhos
+  // 1. Caminhos absolutos
   const absoluteInput = path.resolve(input)
   const absoluteOutput = path.resolve(output)
   const absoluteCert = path.resolve(certificate)
@@ -24,7 +32,7 @@ export async function signPdf(
     path.basename(absoluteInput).replace('.pdf', '_signed.pdf'),
   )
 
-  // 2. Verificação de pré-condições
+  // 2. Verificações iniciais
   if (!fs.existsSync(absoluteInput)) {
     throw new Error(`Arquivo de entrada não encontrado: ${absoluteInput}`)
   }
@@ -33,7 +41,7 @@ export async function signPdf(
     throw new Error(`Certificado não encontrado: ${absoluteCert}`)
   }
 
-  // 3. Execução do comando
+  // 3. Comando de assinatura
   const command = [
     javaCmd,
     ...javaOpts,
@@ -43,13 +51,15 @@ export async function signPdf(
     `-ksf "${absoluteCert}"`,
     `-ksp "${certPassword}"`,
     `-d "${outputDir}"`,
-    `-dst "${jsignpdfOutput}"`, // Usamos o padrão do jsignpdf aqui
+    `-dst "${jsignpdfOutput}"`,
     '-l2 "Assinado por LabMoura"',
     `"${absoluteInput}"`,
   ].join(' ')
 
-  console.log('Executando comando de assinatura:', command)
+  console.log('Executando comando de assinatura:')
+  console.log(command)
 
+  // 4. Execução do comando
   try {
     execSync(command, {
       stdio: 'inherit',
@@ -58,26 +68,29 @@ export async function signPdf(
     })
   } catch (error) {
     if (!fs.existsSync(jsignpdfOutput)) {
-      throw new Error(`Falha na assinatura: ${error.message}`)
+      const errorMessage =
+        error instanceof Error ? error.message : String(error)
+
+      throw new Error(`Falha na assinatura: ${errorMessage}`)
     }
-    console.warn('Assinatura concluída com warnings:', error.message)
+    const warningMessage =
+      error instanceof Error ? error.message : String(error)
+    console.warn('Assinatura finalizada com warnings:', warningMessage)
   }
 
-  // 4. Pós-processamento
+  // 5. Validação de saída
   if (!fs.existsSync(jsignpdfOutput)) {
-    throw new Error('Arquivo assinado não foi gerado')
+    throw new Error('O arquivo assinado não foi gerado')
   }
 
-  // 5. Verificação básica da assinatura
   const fileSize = fs.statSync(jsignpdfOutput).size
   if (fileSize <= 0) {
     fs.unlinkSync(jsignpdfOutput)
-    throw new Error('Arquivo assinado está vazio')
+    throw new Error('O arquivo assinado está vazio')
   }
 
-  // 6. Renomeação (se necessário)
+  // 6. Substitui o output final, se necessário
   if (jsignpdfOutput !== absoluteOutput) {
-    // Remove o arquivo de destino se já existir
     if (fs.existsSync(absoluteOutput)) {
       fs.unlinkSync(absoluteOutput)
     }
@@ -85,10 +98,5 @@ export async function signPdf(
     console.log(`Arquivo final movido para: ${absoluteOutput}`)
   }
 
-  // 7. Verificação final
-  if (!fs.existsSync(absoluteOutput)) {
-    throw new Error('Arquivo assinado final não encontrado')
-  }
-
-  console.log('Assinatura concluída com sucesso em:', absoluteOutput)
+  console.log('✅ Assinatura digital concluída com sucesso!')
 }
