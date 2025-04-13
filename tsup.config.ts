@@ -6,8 +6,10 @@ export default defineConfig({
 
   loader: {
     '.properties': 'copy',
-
+    '.env': 'copy', // Copia o arquivo sem tentar bundle
     '.jar': 'copy',
+    '.pem': 'copy',
+    '.pfx': 'copy',
     '.png': 'copy',
     '.jpeg': 'copy',
   },
