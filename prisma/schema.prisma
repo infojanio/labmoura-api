@@ -61,6 +61,30 @@ model Product {
   @@map("products")
 }
 
+model Report {
+  id              String   @id @default(uuid())
+  customerName    String   @map("customer_name")
+  address         String
+  document        String // CPF or CNPJ
+  phone           String
+  email           String
+  technicianName  String   @map("technician_name")
+  sampleOrigin    String   @map("sample_origin") //origemAmostra
+  sampleType      String   @map("sample_type") //tipoAmostra
+  entryDate       DateTime @map("entry_date")
+  collectionDate  DateTime @map("collection_date") //dataColeta
+  collectionTime  String   @map("collection_time") //horaColeta
+  collectionAgent String   @map("collection_agent") //responsavelColeta
+  notes           String?  @map("notes")
+  analysisResults Json     @map("analysis_results") // armazenará os parâmetros físico-químicos
+  signedPdfUrl    String?  @map("signed_pdf_url") // URL para o PDF assinado com QR Code
+  sampleImageUrls String[] @map("sample_image_urls") // URLs das imagens da amostra ou laudo físico
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("reports")
+}
+
 model Order {
   id           String      @id @default(uuid())
   user_id      String      @map("user_id")

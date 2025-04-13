@@ -5,12 +5,7 @@ import fastifyFormBody from '@fastify/formbody'
 import { ZodError } from 'zod'
 import { env } from './.env'
 
-import { usersRoutes } from '@/http/controllers/users/routes'
-import { storesRoutes } from '@/http/controllers/stores/routes'
-import { ordersRoutes } from '@/http/controllers/orders/routes'
-import { productsRoutes } from '@/http/controllers/products/routes'
-import { subcategoriesRoutes } from '@/http/controllers/subcategories/routes'
-import { categoriesRoutes } from './http/controllers/categories/routes'
+import { reportsRoutes } from '@/http/controllers/reports/routes'
 
 export const app = fastify({
   //logger: true,
@@ -18,14 +13,14 @@ export const app = fastify({
 // Habilita JSON no body
 app.register(fastifyFormBody)
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
-app.register(fastifyCors)
+app.register(fastifyCors, {
+  origin: 'http://localhost:5173', // URL exata do seu frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Só se estiver usando autenticação com cookies/tokens
+})
 
-app.register(usersRoutes)
-app.register(storesRoutes)
-app.register(categoriesRoutes)
-app.register(subcategoriesRoutes)
-app.register(productsRoutes)
-app.register(ordersRoutes)
+app.register(reportsRoutes)
 
 app.addHook('preHandler', async (request, reply) => {
   //console.log('REQUEST BODY:', request.body)
