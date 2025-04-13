@@ -1,4 +1,4 @@
-# Requisitos do Aplicativo de Cashback
+# Requisitos do sistema para cadastro, consulta e validação de laudos de análise de água.
 
 ## RFs (Requisitos Funcionais)
 
