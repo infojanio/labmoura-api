@@ -6,7 +6,7 @@ import fastifyStatic from '@fastify/static'
 import path from 'path'
 
 import { ZodError } from 'zod'
-import { env } from '@/.env'
+import { env } from '@/env'
 
 import { reportsRoutes } from '@/http/controllers/reports/routes'
 import fastifyMultipart from '@fastify/multipart'

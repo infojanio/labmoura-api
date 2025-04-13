@@ -1,5 +1,5 @@
 // Crie um arquivo config.ts
-import { env } from '@/.env' // ou './.env' (escolha um padrão)
+import { env } from '@/env' // ou './.env' (escolha um padrão)
 import dotenv from 'dotenv'
 
 try {
