@@ -2,7 +2,7 @@ import { defineConfig } from 'tsup'
 
 export default defineConfig({
   // ... outras configurações
-  external: ['.env', '@/.env'],
+  external: ['.env', '@/env'],
 
   loader: {
     '.properties': 'copy',
