@@ -6,7 +6,7 @@ const envSchema = z.object({
     .enum(['development', 'test', 'production'])
     .default('development'),
   JWT_SECRET: z.string(),
-  PORT: z.coerce.number().default(3333),
+  PORT: z.coerce.number().default(8080),
   PUBLIC_REPORT_URL: z.string().url(),
   CERT_PATH: z.string(),
   CERT_PASSWORD: z.string(),
