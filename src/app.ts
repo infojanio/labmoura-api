@@ -1,43 +1,20 @@
+import 'dotenv/config'
 import fastify from 'fastify'
-
 import fastifyCors from '@fastify/cors'
 import fastifyFormBody from '@fastify/formbody'
 import fastifyStatic from '@fastify/static'
-import path from 'path'
-
-import { ZodError } from 'zod'
-import { env } from '@/env'
-
-import { reportsRoutes } from '@/http/controllers/reports/routes'
 import fastifyMultipart from '@fastify/multipart'
+import path from 'path'
+import { ZodError } from 'zod'
+
+import { env } from '@/env'
+import { reportsRoutes } from '@/http/controllers/reports/routes'
 
 export const app = fastify({
-  //logger: true,
-})
-// Habilita JSON no body
-app.register(fastifyMultipart)
-app.register(fastifyFormBody)
-//app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
-
-app.register(fastifyCors, {
-  origin: [
-    'https://labmoura-web-production.up.railway.app',
-    'http://localhost:3000', // Para desenvolvimento
-  ],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'Accept',
-    'Origin',
-    'X-Requested-With',
-  ],
-  exposedHeaders: ['Content-Disposition'], // Importante para downloads
-  credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
+  // logger: true,
 })
 
+// Multipart (apenas uma vez!)
 app.register(fastifyMultipart, {
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
@@ -47,6 +24,38 @@ app.register(fastifyMultipart, {
   sharedSchemaId: 'MultipartFileType',
 })
 
+// Form body
+app.register(fastifyFormBody)
+
+// CORS
+const allowedOrigins = [
+  'https://labmoura-web-production.up.railway.app',
+  'http://localhost:3000', // dev local
+]
+
+app.register(fastifyCors, {
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Not allowed by CORS'), false)
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'Accept',
+    'Origin',
+    'X-Requested-With',
+  ],
+  exposedHeaders: ['Content-Disposition'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+})
+
+// PDF público
 app.register(fastifyStatic, {
   root: path.resolve('tmp'),
   prefix: '/pdf/',
@@ -57,22 +66,24 @@ app.register(fastifyStatic, {
   },
 })
 
+// Rotas
 app.register(reportsRoutes)
 
+// Logs de requisições para debug
 app.addHook('preHandler', async (request, reply) => {
   console.log('Origin recebida:', request.headers.origin)
 })
-
 app.addHook('onRequest', (request, reply, done) => {
   console.log('Headers recebidos:', request.headers)
   done()
 })
 
+// CORS dinâmico por segurança
 app.addHook('onSend', async (request, reply, payload) => {
-  reply.header(
-    'Access-Control-Allow-Origin',
-    'https://labmoura-web-production.up.railway.app',
-  )
+  const origin = request.headers.origin
+  if (origin && allowedOrigins.includes(origin)) {
+    reply.header('Access-Control-Allow-Origin', origin)
+  }
   reply.header(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, DELETE, OPTIONS',
@@ -81,6 +92,7 @@ app.addHook('onSend', async (request, reply, payload) => {
   return payload
 })
 
+// Tratamento de erros
 app.setErrorHandler((error, _request, reply) => {
   if (error instanceof ZodError) {
     return reply
@@ -89,9 +101,7 @@ app.setErrorHandler((error, _request, reply) => {
   }
 
   if (env.NODE_ENV !== 'production') {
-    console.log(error)
-  } else {
-    // AQUI deveremos fazer um log para uma ferramenta externa, como DataDog, NewRelic, Sentry
+    console.error(error)
   }
 
   return reply.status(500).send({ message: 'Internal server error.' })
