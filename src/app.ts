@@ -36,7 +36,7 @@ app.register(fastifyStatic, {
 app.register(reportsRoutes)
 
 app.addHook('preHandler', async (request, reply) => {
-  //console.log('REQUEST BODY:', request.body)
+  console.log('Origin recebida:', request.headers.origin)
 })
 
 app.setErrorHandler((error, _request, reply) => {
