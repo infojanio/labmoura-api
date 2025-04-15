@@ -20,7 +20,10 @@ app.register(fastifyFormBody)
 //app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
 
 app.register(fastifyCors, {
-  origin: true,
+  origin: [
+    'https://labmoura-web-production.up.railway.app',
+    'http://localhost:3000', // Para desenvolvimento
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
     'Content-Type',
@@ -63,6 +66,19 @@ app.addHook('preHandler', async (request, reply) => {
 app.addHook('onRequest', (request, reply, done) => {
   console.log('Headers recebidos:', request.headers)
   done()
+})
+
+app.addHook('onSend', async (request, reply, payload) => {
+  reply.header(
+    'Access-Control-Allow-Origin',
+    'https://labmoura-web-production.up.railway.app',
+  )
+  reply.header(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, DELETE, OPTIONS',
+  )
+  reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  return payload
 })
 
 app.setErrorHandler((error, _request, reply) => {
