@@ -19,9 +19,10 @@ app.register(fastifyMultipart)
 app.register(fastifyFormBody)
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
 app.register(fastifyCors, {
-  origin: ['https://beige-fly-980953.hostingersite.com'], // URL exata do seu frontend
+  origin: ['https://beige-fly-980953.hostingersite.com'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 })
 app.register(fastifyStatic, {
   root: path.resolve('tmp'),
