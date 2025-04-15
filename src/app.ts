@@ -18,17 +18,8 @@ export const app = fastify({
 app.register(fastifyMultipart)
 app.register(fastifyFormBody)
 app.register(fastifyJwt, { secret: process.env.JWT_SECRET! })
-
-// ✅ CORS dinâmico (evita bloqueios)
 app.register(fastifyCors, {
-  origin: (origin, cb) => {
-    const allowedOrigins = ['https://beige-fly-980953.hostingersite.com']
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true)
-    } else {
-      cb(new Error('Origin not allowed'), false)
-    }
-  },
+  origin: true, //['https://beige-fly-980953.hostingersite.com']
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
