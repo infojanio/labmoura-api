@@ -11,26 +11,13 @@ import { env } from '@/env'
 import { reportsRoutes } from '@/http/controllers/reports/routes'
 
 export const app = fastify({
-  // logger: true,
+  logger: true,
 })
 
-// Multipart (apenas uma vez!)
-app.register(fastifyMultipart, {
-  limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
-    files: 1,
-  },
-  attachFieldsToBody: true,
-  sharedSchemaId: 'MultipartFileType',
-})
-
-// Form body
-app.register(fastifyFormBody)
-
-// CORS
+// 1. Configuração de CORS (antes de tudo)
 const allowedOrigins = [
   'https://labmoura-web-production.up.railway.app',
-  'http://localhost:3000', // dev local
+  'http://localhost:3000',
 ]
 
 app.register(fastifyCors, {
@@ -42,20 +29,22 @@ app.register(fastifyCors, {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: [
-    'Content-Type',
-    'Authorization',
-    'Accept',
-    'Origin',
-    'X-Requested-With',
-  ],
-  exposedHeaders: ['Content-Disposition'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
 })
 
-// PDF público
+// 2. Formulários e multipart
+app.register(fastifyFormBody)
+app.register(fastifyMultipart, {
+  limits: {
+    fileSize: 10 * 1024 * 1024,
+    files: 1,
+  },
+  attachFieldsToBody: true,
+  sharedSchemaId: 'MultipartFileType',
+})
+
+// 3. Servir PDFs assinados
 app.register(fastifyStatic, {
   root: path.resolve('tmp'),
   prefix: '/pdf/',
@@ -66,42 +55,29 @@ app.register(fastifyStatic, {
   },
 })
 
-// Rotas
+// 4. Rotas da aplicação
 app.register(reportsRoutes)
 
-// Logs de requisições para debug
-app.addHook('preHandler', async (request, reply) => {
-  console.log('Origin recebida:', request.headers.origin)
-})
-app.addHook('onRequest', (request, reply, done) => {
-  console.log('Headers recebidos:', request.headers)
-  done()
-})
-
-// CORS dinâmico por segurança
-app.addHook('onSend', async (request, reply, payload) => {
-  const origin = request.headers.origin
-  if (origin && allowedOrigins.includes(origin)) {
-    reply.header('Access-Control-Allow-Origin', origin)
-  }
-  reply.header(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, OPTIONS',
-  )
-  reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-  return payload
+// 5. Logs úteis (opcional em produção)
+app.addHook('onRequest', async (request) => {
+  console.log('🛰️ Requisição:', {
+    method: request.method,
+    url: request.url,
+    origin: request.headers.origin,
+  })
 })
 
-// Tratamento de erros
+// 6. Tratamento de erros globais
 app.setErrorHandler((error, _request, reply) => {
   if (error instanceof ZodError) {
-    return reply
-      .status(400)
-      .send({ message: 'Validation error.', issues: error.format() })
+    return reply.status(400).send({
+      message: 'Validation error.',
+      issues: error.format(),
+    })
   }
 
   if (env.NODE_ENV !== 'production') {
-    console.error(error)
+    console.error('Erro interno:', error)
   }
 
   return reply.status(500).send({ message: 'Internal server error.' })

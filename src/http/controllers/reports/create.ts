@@ -51,8 +51,13 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
       technicianName: report.technicianName ?? '',
       sampleOrigin: report.sampleOrigin ?? '',
       sampleType: report.sampleType ?? '',
-      entryDate: report.entryDate.toISOString().split('T')[0],
-      collectionDate: report.collectionDate.toISOString().split('T')[0],
+      entryDate: report.entryDate
+        ? report.entryDate.toISOString().split('T')[0]
+        : '',
+      collectionDate: report.collectionDate
+        ? report.collectionDate.toISOString().split('T')[0]
+        : '',
+
       collectionTime: report.collectionTime ?? '',
       collectionAgent: report.collectionAgent ?? '',
       notes: report.notes ?? '',
@@ -81,8 +86,8 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 
     // QR Code
     page.drawImage(pngImage, {
-      x: 50,
-      y: 50,
+      x: 120,
+      y: 120,
       width: pngDims.width,
       height: pngDims.height,
     })
@@ -116,12 +121,12 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     // Assinatura digital A1
     const signedPath = path.resolve('tmp', `signed-${path.basename(pdfPath)}`)
 
-    await signPdf(
-      pdfPath,
-      signedPath,
-      path.resolve('src/certs', 'certificado.pfx'),
-      process.env.CERT_PASSWORD || '',
-    )
+    await signPdf({
+      input: pdfPath,
+      output: signedPath,
+      certificate: path.resolve('src/certs', 'certificado.pfx'),
+      certPassword: process.env.CERT_PASSWORD || '',
+    })
 
     const signedUrl = `${process.env.PUBLIC_REPORT_URL}/pdf/${path.basename(
       signedPath,
