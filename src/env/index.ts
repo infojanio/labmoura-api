@@ -2,9 +2,7 @@ import 'dotenv/config'
 import { z } from 'zod'
 
 const envSchema = z.object({
-  NODE_ENV: z
-    .enum(['development', 'test', 'production'])
-    .default('development'),
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
   JWT_SECRET: z.string(),
   PORT: z.coerce.number().default(8080),
   PUBLIC_REPORT_URL: z.string().url(),
