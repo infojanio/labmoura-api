@@ -23,8 +23,14 @@ async function insertQRCodeAndTextIntoPdf(
   const pdfDoc = await PDFDocument.load(pdfBytes)
   const page = pdfDoc.getPage(0)
 
+  /*
   const qrDataUrl = await QRCode.toDataURL(
     `${process.env.PUBLIC_REPORT_URL}/reports/${reportId}`,
+  )
+    */
+
+  const qrDataUrl = await QRCode.toDataURL(
+    `https://labmoura-web-production.up.railway.app/reports/${reportId}`,
   )
 
   const pngImage = await pdfDoc.embedPng(qrDataUrl)
