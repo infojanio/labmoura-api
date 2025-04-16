@@ -25,6 +25,7 @@ app.register(fastifyCors, {
     'http://localhost:3000', // opcional para dev local
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 })
 // 2. Formulários e multipart
