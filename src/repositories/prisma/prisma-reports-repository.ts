@@ -2,7 +2,26 @@ import { Prisma, Report } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { ReportsRepository } from './Iprisma/reports-repository'
 
+interface FindAllParams {
+  startDate?: Date
+  endDate?: Date
+}
+
 export class PrismaReportsRepository implements ReportsRepository {
+  async findByDate(startDate?: Date, endDate?: Date): Promise<Report[]> {
+    return prisma.report.findMany({
+      where: {
+        AND: [
+          startDate ? { createdAt: { gte: startDate } } : {},
+          endDate ? { createdAt: { lte: endDate } } : {},
+        ],
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+  }
+
   async findById(id: string): Promise<Report | null> {
     return await prisma.report.findUnique({ where: { id } })
   }
@@ -19,19 +38,17 @@ export class PrismaReportsRepository implements ReportsRepository {
     return await prisma.report.findMany({ orderBy: { createdAt: 'desc' } })
   }
 
-  async listAll(startDate?: Date, endDate?: Date) {
-    const where: any = {}
-
-    if (startDate && endDate) {
-      where.createdAt = {
-        gte: startDate,
-        lte: endDate,
-      }
-    }
-
-    return await prisma.report.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
+  async listAll({ startDate, endDate }: FindAllParams = {}) {
+    return prisma.report.findMany({
+      where: {
+        createdAt: {
+          ...(startDate && { gte: startDate }),
+          ...(endDate && { lte: endDate }),
+        },
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
     })
   }
 

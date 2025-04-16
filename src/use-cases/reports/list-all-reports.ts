@@ -10,7 +10,7 @@ export class ListAllReportsUseCase {
   constructor(private reportsRepository: ReportsRepository) {}
 
   async execute({ startDate, endDate }: ListAllReportsUseCaseRequest) {
-    const reports = await this.reportsRepository.listAll(startDate, endDate)
+    const reports = await this.reportsRepository.findByDate(startDate, endDate)
     return { reports }
   }
 }
