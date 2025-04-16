@@ -11,7 +11,7 @@ import { env } from '@/env'
 import { reportsRoutes } from '@/http/controllers/reports/routes'
 
 export const app = fastify({
-  logger: true,
+  // logger: true,
 })
 
 // 1. Configuração de CORS (antes de tudo)
