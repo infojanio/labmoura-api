@@ -8,11 +8,16 @@ export async function uploadPdfController(
   request: FastifyRequest,
   reply: FastifyReply,
 ) {
+  console.log('🚀 Chegou no uploadPdfController')
+  console.log('📦 Headers:', request.headers)
+
   const file = await request.file()
 
   if (!file) {
+    console.log('❌ Nenhum arquivo recebido!')
     return reply.status(400).send({ message: 'Nenhum arquivo enviado' })
   }
+  console.log('✅ Arquivo recebido:', file.filename)
 
   const buffer = await file.toBuffer()
   const originalName = file.filename
