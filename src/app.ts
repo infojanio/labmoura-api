@@ -16,23 +16,17 @@ export const app = fastify({
 
 // 1. Configuração de CORS (antes de tudo)
 const allowedOrigins = [
+  //'http://localhost:3333',
   'https://labmoura-web-production.up.railway.app',
-  'http://localhost:3000',
 ]
-
 app.register(fastifyCors, {
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      cb(null, true)
-    } else {
-      cb(new Error('Not allowed by CORS'), false)
-    }
-  },
+  origin: [
+    'https://labmoura-web-production.up.railway.app', // ✅ frontend hospedado
+    'http://localhost:3000', // opcional para dev local
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 })
-
 // 2. Formulários e multipart
 app.register(fastifyFormBody)
 app.register(fastifyMultipart, {
