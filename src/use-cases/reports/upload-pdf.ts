@@ -1,10 +1,11 @@
 // --- src/use-cases/reports/upload-pdf.ts
 import { randomUUID } from 'crypto'
 import path from 'path'
-
+import fs from 'fs'
+import { execSync } from 'child_process'
 import QRCode from 'qrcode'
 import { PDFDocument, rgb } from 'pdf-lib'
-import fs from 'fs'
+
 import { ReportsRepository } from '@/repositories/prisma/Iprisma/reports-repository'
 import { signPdf } from '@/lib/sign-pdf-node'
 
@@ -14,7 +15,6 @@ interface UploadPdfUseCaseRequest {
   reportsRepository: ReportsRepository
 }
 
-// Gera o QR code + insere texto explicativo no PDF antes da assinatura
 async function insertQRCodeAndTextIntoPdf(
   inputPath: string,
   reportId: string,
@@ -78,21 +78,34 @@ export class UploadPdfUseCase {
   }: UploadPdfUseCaseRequest) {
     const reportId = randomUUID()
 
-    const outputPath = path.resolve('tmp', `signed-${originalName}`)
-
-    // Etapa 1: insere QR e texto
+    // Etapa 1: Gera PDF com QR Code
     const modifiedPath = await insertQRCodeAndTextIntoPdf(inputPath, reportId)
 
-    // Etapa 2: assina o PDF com certificado A1
-    await signPdf({
-      input: modifiedPath,
-      output: outputPath,
-      certificate: path.resolve('src/certs', 'certificado.pfx'),
-      certPassword: process.env.CERT_PASSWORD || '',
-    })
+    let finalPath = modifiedPath
+
+    // Etapa 2: Tenta assinar digitalmente (se Java estiver instalado)
+    try {
+      execSync('java -version', { stdio: 'ignore' })
+
+      const outputPath = path.resolve('tmp', `signed-${originalName}`)
+
+      await signPdf({
+        input: modifiedPath,
+        output: outputPath,
+        certificate: path.resolve('src/certs', 'certificado.pfx'),
+        certPassword: process.env.CERT_PASSWORD || '',
+      })
+
+      finalPath = outputPath
+      console.log('✅ PDF assinado com sucesso!')
+    } catch (error) {
+      console.warn(
+        '⚠️ Java não disponível — PDF gerado sem assinatura digital.',
+      )
+    }
 
     const signedPdfUrl = `${process.env.PUBLIC_REPORT_URL}/pdf/${path.basename(
-      outputPath,
+      finalPath,
     )}`
 
     const report = await reportsRepository.create({
