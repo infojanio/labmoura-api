@@ -9,13 +9,15 @@ interface FindAllParams {
 
 export class PrismaReportsRepository implements ReportsRepository {
   async findByDate(startDate?: Date, endDate?: Date): Promise<Report[]> {
-    return prisma.report.findMany({
-      where: {
-        AND: [
-          startDate ? { createdAt: { gte: startDate } } : {},
-          endDate ? { createdAt: { lte: endDate } } : {},
-        ],
+    const where = {
+      createdAt: {
+        ...(startDate && { gte: startDate }),
+        ...(endDate && { lte: endDate }),
       },
+    }
+
+    return prisma.report.findMany({
+      where,
       orderBy: {
         createdAt: 'desc',
       },
