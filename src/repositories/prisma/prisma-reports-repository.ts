@@ -19,6 +19,22 @@ export class PrismaReportsRepository implements ReportsRepository {
     return await prisma.report.findMany({ orderBy: { createdAt: 'desc' } })
   }
 
+  async listAll(startDate?: Date, endDate?: Date) {
+    const where: any = {}
+
+    if (startDate && endDate) {
+      where.createdAt = {
+        gte: startDate,
+        lte: endDate,
+      }
+    }
+
+    return await prisma.report.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+    })
+  }
+
   async searchMany(search: string, page: number): Promise<Report[]> {
     return await prisma.report.findMany({
       where: {

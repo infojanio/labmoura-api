@@ -5,9 +5,10 @@ import { findReportById } from './fetch-report-by-id'
 //import { updateReport } from './update-report'
 import { downloadSignedPdf } from './download'
 import { uploadPdfController } from './upload'
+import { listAllReportsController } from './list-all-reports'
 
 export async function reportsRoutes(app: FastifyInstance) {
-  app.get('/reports', listReports)
+  app.get('/reports', listAllReportsController)
 
   app.post('/reports', create)
 
