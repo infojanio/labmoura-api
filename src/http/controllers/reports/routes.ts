@@ -8,7 +8,7 @@ import { uploadPdfController } from './upload'
 import { listAllReportsController } from './list-all-reports'
 
 export async function reportsRoutes(app: FastifyInstance) {
-  app.get('/reports', listAllReportsController)
+  app.get('/reports', listReports)
 
   app.post('/reports', create)
 
