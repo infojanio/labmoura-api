@@ -6,6 +6,12 @@ interface FindAllParams {
   startDate?: Date
   endDate?: Date
 }
+interface PaginatedReportParams {
+  startDate?: Date
+  endDate?: Date
+  page: number
+  perPage: number
+}
 
 export class PrismaReportsRepository implements ReportsRepository {
   async findByDate(startDate?: Date, endDate?: Date): Promise<Report[]> {
@@ -22,6 +28,35 @@ export class PrismaReportsRepository implements ReportsRepository {
         createdAt: 'desc',
       },
     })
+  }
+
+  async findByDatePaginated({
+    startDate,
+    endDate,
+    page,
+    perPage,
+  }: PaginatedReportParams): Promise<{
+    reports: Report[]
+    totalCount: number
+  }> {
+    const where = {
+      AND: [
+        startDate ? { createdAt: { gte: startDate } } : {},
+        endDate ? { createdAt: { lte: endDate } } : {},
+      ],
+    }
+
+    const [reports, totalCount] = await Promise.all([
+      prisma.report.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * perPage,
+        take: perPage,
+      }),
+      prisma.report.count({ where }),
+    ])
+
+    return { reports, totalCount }
   }
 
   async findById(id: string): Promise<Report | null> {

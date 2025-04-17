@@ -12,4 +12,11 @@ export interface ReportsRepository {
     data: Prisma.ReportUncheckedUpdateInput,
   ): Promise<Report>
   delete(where: Prisma.ReportWhereUniqueInput): Promise<Report>
+
+  findByDatePaginated(params: {
+    startDate?: Date
+    endDate?: Date
+    page: number
+    perPage: number
+  }): Promise<{ reports: Report[]; totalCount: number }>
 }

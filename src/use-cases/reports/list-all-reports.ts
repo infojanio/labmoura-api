@@ -1,22 +1,34 @@
+// src/use-cases/reports/list-all-reports.ts
 import { ReportsRepository } from '@/repositories/prisma/Iprisma/reports-repository'
 
 interface ListAllReportsUseCaseRequest {
   startDate?: Date
   endDate?: Date
+  page: number
+  perPage: number
 }
 
 export class ListAllReportsUseCase {
   constructor(private reportsRepository: ReportsRepository) {}
 
-  async execute({ startDate, endDate }: ListAllReportsUseCaseRequest) {
-    if (!startDate && !endDate) {
-      // Retorna todos os laudos
-      const reports = await this.reportsRepository.listMany()
-      return { reports }
-    }
+  async execute({
+    startDate,
+    endDate,
+    page,
+    perPage,
+  }: ListAllReportsUseCaseRequest) {
+    const {
+      reports,
+      totalCount,
+    } = await this.reportsRepository.findByDatePaginated({
+      startDate,
+      endDate,
+      page,
+      perPage,
+    })
 
-    // Filtra por data, se fornecida
-    const reports = await this.reportsRepository.findByDate(startDate, endDate)
-    return { reports }
+    const totalPages = Math.ceil(totalCount / perPage)
+
+    return { reports, totalPages }
   }
 }

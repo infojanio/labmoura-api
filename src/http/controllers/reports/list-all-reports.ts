@@ -10,16 +10,20 @@ export async function listAllReportsController(
   const querySchema = z.object({
     startDate: z.string().optional(),
     endDate: z.string().optional(),
+    page: z.coerce.number().min(1).default(1),
+    perPage: z.coerce.number().min(1).max(50).default(10),
   })
 
-  const { startDate, endDate } = querySchema.parse(request.query)
+  const { startDate, endDate, page, perPage } = querySchema.parse(request.query)
 
   const listAllReportsUseCase = makeListAllReportsUseCase()
 
-  const reports = await listAllReportsUseCase.execute({
+  const { reports, totalPages } = await listAllReportsUseCase.execute({
     startDate: startDate ? new Date(startDate) : undefined,
     endDate: endDate ? new Date(endDate) : undefined,
+    page,
+    perPage,
   })
 
-  return reply.send({ reports })
+  return reply.send({ reports, totalPages })
 }
