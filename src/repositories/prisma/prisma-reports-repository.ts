@@ -1,11 +1,20 @@
 import { Prisma, Report } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
 import { ReportsRepository } from './Iprisma/reports-repository'
+import { createDecipheriv } from 'node:crypto'
 
 interface FindAllParams {
   startDate?: Date
   endDate?: Date
 }
+
+// Defina um tipo para a resposta reduzida
+type ReportSummary = {
+  id: string
+  createdAt: Date
+  signedPdfUrl: string | null
+}
+
 interface PaginatedReportParams {
   startDate?: Date
   endDate?: Date
@@ -72,7 +81,31 @@ export class PrismaReportsRepository implements ReportsRepository {
   }
 
   async listMany(): Promise<Report[]> {
-    return await prisma.report.findMany({ orderBy: { createdAt: 'desc' } })
+    return prisma.report.findMany({
+      select: {
+        id: true,
+        customerName: true,
+        createdAt: true,
+        document: true,
+        email: true,
+        entryDate: true,
+        notes: true,
+        phone: true,
+        sampleImageUrls: true,
+        sampleOrigin: true,
+        sampleType: true,
+        signedPdfUrl: true,
+        technicianName: true,
+        collectionAgent: true,
+        analysisResults: true,
+        collectionTime: true,
+        collectionDate: true,
+        address: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
   }
 
   async listAll({ startDate, endDate }: FindAllParams = {}) {

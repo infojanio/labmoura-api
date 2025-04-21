@@ -16,13 +16,13 @@ export const app = fastify({
 
 // 1. Configuração de CORS (antes de tudo)
 const allowedOrigins = [
-  //'http://localhost:3333',
   'https://labmoura-web-production.up.railway.app',
+  //'http://localhost:5173',
 ]
 app.register(fastifyCors, {
   origin: [
     'https://labmoura-web-production.up.railway.app', // ✅ frontend hospedado
-    'http://localhost:3000', // opcional para dev local
+    //'http://localhost:5173', // opcional para dev local
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

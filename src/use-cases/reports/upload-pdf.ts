@@ -4,7 +4,7 @@ import path from 'path'
 import fs from 'fs'
 import { execSync } from 'child_process'
 import QRCode from 'qrcode'
-import { PDFDocument, rgb } from 'pdf-lib'
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib'
 
 import { ReportsRepository } from '@/repositories/prisma/Iprisma/reports-repository'
 import { signPdf } from '@/lib/sign-pdf-node'
@@ -21,8 +21,9 @@ async function insertQRCodeAndTextIntoPdf(
 ): Promise<string> {
   const pdfBytes = fs.readFileSync(inputPath)
   const pdfDoc = await PDFDocument.load(pdfBytes)
-  const page = pdfDoc.getPage(0)
-
+  const pages = pdfDoc.getPages()
+  const lastPage = pages[pages.length - 1]
+  const font = await pdfDoc.embedFont(StandardFonts.Helvetica)
   /*
   const qrDataUrl = await QRCode.toDataURL(
     `${process.env.PUBLIC_REPORT_URL}/reports/${reportId}`,
@@ -30,40 +31,42 @@ async function insertQRCodeAndTextIntoPdf(
     */
 
   const qrDataUrl = await QRCode.toDataURL(
-    `https://labmoura-web-production.up.railway.app/reports/${reportId}`,
+    `https://localhost:5173/reports/${reportId}`,
+    //    `https://labmoura-web-production.up.railway.app/reports/${reportId}`,
   )
 
   const pngImage = await pdfDoc.embedPng(qrDataUrl)
   const pngDims = pngImage.scale(0.3)
 
-  page.drawImage(pngImage, {
+  // Desenha o QR Code no canto inferior esquerdo da última página
+  lastPage.drawImage(pngImage, {
     x: 50,
-    y: 50,
+    y: 150,
     width: pngDims.width,
     height: pngDims.height,
   })
 
-  const validationText = `
-Sistema para validação do laudo
+  const validationLines = [
+    'Sistema para validação do laudo',
+    'A autenticidade deste documento pode ser conferida no site:',
+    'https://labmoura.com.br/laudos',
+    '',
+    'Informe o código abaixo:',
+    reportId,
+  ]
 
-A autenticidade deste documento pode ser conferida no site:
-https://labmoura.com.br/laudo
-
-Informe o código abaixo:
-${reportId}`
-
+  const footerY = 150
   const fontSize = 9
+  const lineSpacing = 12
   const textX = 130
-  const textY = 50
 
-  validationText.split('\n').forEach((line, index) => {
-    page.drawText(line.trim(), {
+  validationLines.forEach((line, index) => {
+    lastPage.drawText(line, {
       x: textX,
-      y:
-        textY +
-        (validationText.split('\n').length - index - 1) * (fontSize + 2),
+      y: footerY + (validationLines.length - index - 1) * lineSpacing,
       size: fontSize,
-      color: rgb(0, 0, 0),
+      font, // 👈 agora sim!
+      color: rgb(0.2, 0.2, 0.2),
     })
   })
 

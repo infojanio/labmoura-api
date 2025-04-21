@@ -91,7 +91,7 @@ export async function generateReportPDF(data: ReportData): Promise<string> {
 
     page.drawImage(signatureImage, {
       x: 50,
-      y: 100,
+      y: 200,
       width: signatureDims.width,
       height: signatureDims.height,
     })
@@ -100,11 +100,11 @@ export async function generateReportPDF(data: ReportData): Promise<string> {
   }
 
   // Texto de validação + código
-  const validationText = `Este documento pode ser validado acessando:\nhttps://labmoura.com.br/laudo\nCódigo: ${data.id}`
+  const validationText = `Este documento pode ser validado acessando:\nhttps://labmoura.com.br/laudos\nCódigo: ${data.id}`
 
   page.drawText(validationText, {
     x: 300,
-    y: 110,
+    y: 210,
     size: 9,
     font,
     color: rgb(0.2, 0.2, 0.2),

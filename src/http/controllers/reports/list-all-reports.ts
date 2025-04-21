@@ -16,11 +16,16 @@ export async function listAllReportsController(
 
   const { startDate, endDate, page, perPage } = querySchema.parse(request.query)
 
+  const parsedStart = startDate ? new Date(startDate) : undefined
+  const parsedEnd = endDate
+    ? new Date(new Date(endDate).setHours(23, 59, 59, 999))
+    : undefined
+
   const listAllReportsUseCase = makeListAllReportsUseCase()
 
   const { reports, totalPages } = await listAllReportsUseCase.execute({
-    startDate: startDate ? new Date(startDate) : undefined,
-    endDate: endDate ? new Date(endDate) : undefined,
+    startDate: parsedStart,
+    endDate: parsedEnd,
     page,
     perPage,
   })
