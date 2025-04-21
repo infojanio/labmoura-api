@@ -4,7 +4,7 @@ import { z } from 'zod'
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('production'),
   JWT_SECRET: z.string(),
-  PORT: z.coerce.number().default(8080),
+  PORT: z.coerce.number().default(57508), //adicione a porta aqui 3333 para rodar local
   PUBLIC_REPORT_URL: z.string().url(),
   DATABASE_URL: z.string().url(),
   CERT_PATH: z.string(),
