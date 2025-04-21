@@ -31,8 +31,8 @@ async function insertQRCodeAndTextIntoPdf(
     */
 
   const qrDataUrl = await QRCode.toDataURL(
-    `https://localhost:5173/reports/${reportId}`,
-    //    `https://labmoura-web-production.up.railway.app/reports/${reportId}`,
+    //`https://localhost:5173/reports/${reportId}`,
+    `https://labmoura-web-production.up.railway.app/reports/${reportId}`,
   )
 
   const pngImage = await pdfDoc.embedPng(qrDataUrl)
